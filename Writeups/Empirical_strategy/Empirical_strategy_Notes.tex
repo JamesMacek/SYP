@@ -1,0 +1,94 @@
+\documentclass[]{article}
+\usepackage{setspace}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\onehalfspacing
+
+%opening
+\title{Empirical Strategy Brief Notes}
+\author{James Macek 1001638089}
+
+\begin{document}
+
+\maketitle
+
+
+\section{The model}
+\paragraph*{}
+There are 30 provinces indexed $i \in N$; each can produce goods $s \in \{a, n\}$. Workers in each sector-location are endowed with preferences over goods in these sectors. The utility representation of these preferences is defined implicitly by the relation 
+\begin{equation}
+\sum_{k \in \{a, n\}}\gamma_{k}	^{\frac{1}{\eta}}C_{k}^{\frac{\eta - 1}{\eta}}U^{\epsilon_{k}\frac{\eta}{\eta - 1}} = 1.
+\end{equation}
+I normalize the representation so that $\epsilon_{n} = 1$ and $\gamma_{n} = 1$ as in Comin et. al (2021). I assume these preferences do not vary across time. Each worker in sector location $(i, s)$ face prices $\mathbb{P}_{i, s}^{k}$ for goods in sector $k$. This implies the indirect utility function is defined implicitly by 
+
+\begin{equation} \label{indirectu}
+\mathbb{I}_{i, s} =  \bigg[\sum_{k \in \{a, n\}} \gamma_{k}(\mathbb{P}_{i, s}^{k})^{1-\eta}U_{i, s}^{(1-\eta)\epsilon_{k}} \bigg]^{\frac{1}{1-\eta}}
+\end{equation}
+where $\mathbb{I}_{i, s}$ is the household income of the worker spent on the consumption of goods. This also implies a relation linking expenditure shares on agriculture $\omega_{i, s}$, utility $U_{i, s}$, income and agricultural prices   
+\begin{equation} \label{omega}
+	\omega_{i, s} = \gamma_{i}\bigg[\frac{\mathbb{P}^{a}_{i, s}}{\mathbb{I}_{i, s}}\bigg]^{1-\eta}U_{i, s}^{(1-\eta)\epsilon_{a}}
+\end{equation}
+Each sector good $C_{k}$ is a CES aggregate of goods sourced by other locations. Each location-sector produces and sells the good at marginal cost $c_{i, k}$. Let $\theta_{k}$ be the trade elasticity corresponding to sector $k$. I represent the price index of $C_{k}$ faced by workers $(i, s)$ as
+\begin{equation} \label{priceindexst}
+\mathbb{P}^{k}_{i, s} =	T^{k}_{i, s}\bigg[\sum_{j \in N}\tilde{\gamma}_{i}(\tau_{j, i}^{k})^{-\theta_{k}}c_{i, k}^{-\theta_{k}}\bigg]^{-\frac{1}{\theta_{k}}}
+\end{equation}
+where $\tilde{\gamma_{i}}$ are time-constant preference parameters and $\tau^{k}_{j, i}$ are sector specific trade costs. Since each province represents a large spatial area, I want to capture the empirical regularity that agricultural goods are relatively more expensive to non-agricultural workers if they are more likely to reside in cities-- which is crucial for identifying changes in real income, and thus migration. I however, do not have trade information that is dis-aggregated by urban and rural areas.
+\paragraph*{}
+Note that the representation in (\ref{priceindexst}) implies that the sourcing decisions for all workers within a location $i$ will be identical\footnote{Given a level of agricultural spending, each worker will spend the same fraction of that income on goods from each location.}. This allows us to use trade flow data by sector and province, without having to worry which workers from which occupations are sourcing the goods. 
+\subsection{Land and income}
+\paragraph*{}
+Suppose each worker spends fraction $\nu$ of income on goods, and the rest on housing. This means that total income will be $\frac{1 - \nu}{\nu}\mathbb{I}_{s, k}$. For simplicity (due to the fact that the utility function does not aggregate well), I assume all workers are paid the same nominal income-- i.e. migrants are also entitled to rents from land and capital employed in the sector for which they work in. The aggregate production function in $(i, s)$ is given by
+\begin{equation*}
+	y_{i, s} \propto A_{i, s}L_{i, s}^{\sigma_{s}}H_{i, s}^{\kappa_{H, s}}K_{i, s}^{\kappa_{K, s}}y_{i, s}^{\phi_{a, s}}y_{i, n}^{\phi_{n, s}}
+\end{equation*}
+\paragraph*{}
+$A_{i, s}$ will contain an additional term characterizing external increasing returns; it will endogenously depend on employment of labour per unit of land. A large land share $\kappa_{H}$ will mute increasing returns if we assume the supply of land in reach region to be fixed and immobile. Workers are paid the value added share of output in $(i, s)$. 
+\begin{equation*}
+	A_{i, s} = a_{i, s}\bigg[\frac{L_{i, s}}{H_{i, s}}\bigg]^{\Omega_{k}}
+\end{equation*}
+
+\section{Calibrating relative productivity growth and trade costs}
+\paragraph*{}
+Productivity calibration assumes output markets are in equilibrium.
+\begin{equation} \label{prodsystem}
+	Y_{i, s; 2005} = \sum_{j \in N, k \in \{a, n\}}\bigg[\omega_{j, s; 2005}\mathbb{I}_{j, k; 2005} + \phi_{s, k}Y_{j, k; 2005}\bigg] \frac{\pi_{i, j; 2000}^{s}\hat{\tau^{s}_{i, j}}^{-\theta_{s}}\hat{c_{i, s}}^{-\theta_{s}}}{\sum_{l \in N}\pi_{l, j; 2000}^{s}(\hat{\tau_{l, j}^{s}})^{-\theta_{s}}\hat{c_{l, s}}^{-\theta_{s}}} 
+\end{equation}
+Proposition: Given sector expenditure shares, GDP and estimates of trade cost growth, there exists a unique (up to scale) vector $\hat{c_{i, s}}^{-\theta_{s}}$ solving (\ref{prodsystem}). I set $\mathbb{I}_{j, k; 2005} = (1-\phi_{a, k} - \phi_{n, k})Y_{j, k}$ so (5) satisfies Walras' Law. 
+\paragraph*{}
+Note that we do not target trade flow data in 2005, and use it only to measure the change in trade costs weighted by the trade elasticity $\hat{\tau^{s}_{i, j}}^{\theta_{s}}$. I do, however, use agricultural spending shares in the data to solve the equilibrium uniqueness problem (Our preferences do not satisfy gross substitution) and allows for the recovery of productivity \textit{before} needing to estimate $\epsilon_{a}$ and $\eta$. 
+\paragraph*{}
+Trade costs estimation follow a procedure in Tombe and Zhu (2019), which in turn mirrors the trade cost asymmetry procedure done by Waugh (2010). Defer this for later.
+
+\section{Preference and absolute productivity growth estimation}
+\paragraph{}
+The procedure in (2) identifies relative productivity growth. But the theoretical mechanism I have in mind concerns \textit{absolute} productivity growth. The data is informative about absolute productivity growth because welfare is related to agricultural spending via equation (3). Normalize $\hat{c_{i, s}}$ for each $s$ so that they lie on the unit simplex. Let $G_{s}$ be the scale factor that will identify absolute productivity growth in the data for each sector. Then, one can write equation (\ref{indirectu}) in hat algebra form:
+
+\begin{equation}
+\hat{\mathbb{I}_{i, s}} = \bigg[\sum_{k \in \{a, n\}} \omega_{i, k; 2000}(\hat{\mathbb{P}_{i, s}^{k}})^{1-\eta}\hat{U_{i, s}}^{(1-\eta)\epsilon_{k}} \bigg]^{\frac{1}{1-\eta}}
+\end{equation}
+
+where 
+\begin{equation}
+	\hat{\mathbb{P}}_{i, s}^{k} = \hat{T_{i, s}^{k}}G_{s}\bigg[\sum_{j \in N}\pi_{j, i; 2000}(\hat{\tau_{j, i}^{k}})^{-\theta_{k}}\hat{c_{i, k}}^{-\theta_{k}}\bigg]^{-\frac{1}{\theta_{k}}}
+\end{equation}
+I start by using an exact identification procedure to pin down the growth of within region relative prices. Equation (\ref{omega}) implies the following relationship:
+
+\begin{equation}
+	\hat{T_{i}}^{1-\eta} = \frac{\hat{U_{i, n}}}{\hat{U_{i, a}}}^{(1-\epsilon_{a})(1-\eta)}\hat{\big[\frac{\omega_{i, n}}{1-\omega_{i, n}}\big]}\hat{\big[\frac{\omega_{i, a}}{1-\omega_{i, a}}\big]}^{-1}
+\end{equation}
+So $T_{i}, U_{i}$ are all estimated based on solving equations (6) to (8) for a given value of $G_{s}$. $G_{s}$ are each chosen to match the aggregate fall in relative agricultural spending for both agriculture and nonagriculture workers. 
+\begin{equation}
+placeholder
+\end{equation} 
+Then, I choose $\epsilon_{a}$ and $\eta$ to minimize the squared distance between the predicted value of relative spending in each sector location and the data. In particular,
+
+\begin{equation}
+\min_{\epsilon_{a}, \eta}\sum_{i \in N, s \in \{a, n\}}\bigg[\big[\frac{\hat{\mathbb{P}}_{i, s}^{a}}{\hat{\mathbb{P}}_{i, s}^{n}}\big]^{1-\eta}\hat{U_{i, s}}^{(1-\eta)(\epsilon_{a}-1)} - \hat{\big[\frac{\omega_{i, s}}{1-\omega_{i, s}}\big]} \bigg]^{2}
+\end{equation}
+
+subject to (6), (7), (8) and (9). 
+
+\section{Measuring capital and land allocation}
+
+
+\end{document}
