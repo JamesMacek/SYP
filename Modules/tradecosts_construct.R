@@ -9,7 +9,7 @@ library(tidyverse)
 ##OUTPUT: Regional aggregated tradeflows + Bilateral trade costs WITHOUT TRADE-ELASTICITY WEIGHT.
 
 ##Follows a procedure identical to Tombe and Zhu (2019) and Tombe et. al (2020). 
-##Trade costs are assumed symmetric for now (the standard Head Reiss index.)
+
 
 setwd("C:/Users/James/Dropbox/SchoolFolder/SYP/data/MyData")
 
@@ -51,6 +51,13 @@ row.names(tr_ag_2012) <- colnames(tr_ag_2012)
 tr_na_2012 <- read_excel("2012_na_tradeflows.xlsx")
 tr_na_2012 <- tr_na_2012[, -1]
 row.names(tr_na_2012) <- colnames(tr_na_2012)
+
+master_data$nomY_ag_2000 <- master_data$nomY_ag_2000/(1 - phi_na - phi_aa)
+master_data$nomY_ag_2005 <- master_data$nomY_ag_2005/(1 - phi_na - phi_aa)
+master_data$nomY_ag_2010 <- master_data$nomY_ag_2010/(1 - phi_na - phi_aa)
+master_data$nomY_na_2000 <- master_data$nomY_na_2000/(1 - phi_nn - phi_an)
+master_data$nomY_na_2005 <- master_data$nomY_na_2005/(1 - phi_nn - phi_an)
+master_data$nomY_na_2010 <- master_data$nomY_na_2010/(1 - phi_nn - phi_an)
 
 #Also have to aggregate GDP data in broad regions for sourcing shares of these broad regions (to get trade flows)
 #Numerically assigning provinces to regions given order in "master_raw"
@@ -296,7 +303,19 @@ for (hr in Tradeflows) {
 
 
 
-##Saving data to xlsx 
+## Part 3: Using PPML model to estimate exporter/importer fixed effects ON ORIGINAL DATA and apply Waugh (2010) trade cost asymmetries
+dist <- read_excel("province_distance.xlsx")
+
+provname <- c("Anhui", "Beijing", 
+              "Chongqing", "Fujian", "Gansu", "Guangdong", "Guangxi",	"Guizhou",	"Hainan",	"Hebei",	"Heilongjiang",	"Henan",	
+              "Hubei",	"Hunan",	"Inner Mongolia",	"Jiangsu",	"Jiangxi",	"Jilin",	"Liaoning",	
+              "Ningxia",	"Qinghai",	"Shandong",	"Shanghai",	"Shaanxi",	"Shanxi",	"Sichuan",	
+              "Tianjin",	"Xinjiang",	"Yunnan",	"Zhejiang")
+
+#Imputing trade data into "dist" for estimation
+
+
+##Saving data to xlsx for use later on
 setwd("C:/Users/James/Dropbox/SchoolFolder/SYP/data/MyData/constructed_output")
 write_xlsx(Head_Ries[1], "HRtau_ag_2002.xlsx")
 write_xlsx(Head_Ries[2], "HRtau_na_2002.xlsx")
@@ -305,4 +324,3 @@ write_xlsx(Head_Ries[4], "HRtau_na_2007.xlsx")
 write_xlsx(Head_Ries[5], "HRtau_ag_2012.xlsx")
 write_xlsx(Head_Ries[6], "HRtau_na_2012.xlsx")
 
-##Estimating trade cost change asymmetries - (need data on bilateral distances, come back later)

@@ -69,7 +69,7 @@ emp_glm_2010 <- lm_robust(Emp_2010_growth ~ Emp_density_2005, data=data2plot)
 
 ggplot(data2plot, aes(x=Emp_density_2000, y=Emp_2005_growth)) + geom_point() +
   geom_text(label=rownames(data2plot), nudge_x=0.1, nudge_y=0, check_overlap = F, alpha = 0.8, size = 3.5) +
-  geom_smooth(method="lm") + labs(x="Employment Density, 2000", y="Employment growth, 2000-2010")
+  geom_smooth(method="lm") + labs(x="Employment Density, 2000", y="Employment growth, 2000-2005")
 ggsave("emp_growth_density.png")
 
 
@@ -95,6 +95,7 @@ ggplot(data2plot, aes(x=Emp_density_2000, y=ag_emp_cont_2005)) + geom_point() +
   geom_text(label=rownames(data2plot), nudge_x=0.1, nudge_y=0, check_overlap = F, alpha = 0.8, size = 3.5) +
   geom_smooth(method="lm") + labs(x="Employment Density, 2000", y="Agriculture Contribution to Employment growth, 2000-2005")
 ggsave("ag_cont_growth_density.png")
+
 
 
 

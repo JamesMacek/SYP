@@ -1,9 +1,10 @@
 
 %Date created: May 11th 2021
-%Date edited: June 9th 2021
+%Date edited: June 25th 2021
 
-%This file estimates marginal costs using the market clearing condition.
-%Outputs value of inverse (NORMALIZED) marginal costs (to the power of the trade elasticity) to original
+%This file estimates marginal costs using the market clearing condition,
+%assuming exogenous (calibrated) deficits. Outputs the value of these deficits and 
+%outputs value of inverse (NORMALIZED) marginal costs (to the power of the trade elasticity) to original
 %data for use with other modules in the project.
 %Also outputs (NORMALIZED) price indicies to the power of the trade elasticity 
 %Marginal costs are normalized so that chinese provinces have a geometric
@@ -26,11 +27,17 @@ ag_tradeflows_2002 = readtable('2002_ag_tradeflows.xlsx');
 ag_tradeflows_2002 = table2array(removevars(ag_tradeflows_2002, 'Var1'));
 ag_tradeflows_2007 = readtable('2007_ag_tradeflows.xlsx');
 ag_tradeflows_2007 = table2array(removevars(ag_tradeflows_2007, 'Var1'));
+ag_tradeflows_2012 = readtable('2012_ag_tradeflows.xlsx');
+ag_tradeflows_2012 = table2array(removevars(ag_tradeflows_2012, 'Var1'));
 na_tradeflows_2002 = readtable('2002_na_tradeflows.xlsx');
 na_tradeflows_2002 = table2array(removevars(na_tradeflows_2002, 'Var1'));
 na_tradeflows_2007 = readtable('2007_na_tradeflows.xlsx');
 na_tradeflows_2007 = table2array(removevars(na_tradeflows_2007, 'Var1'));
+na_tradeflows_2012 = readtable('2012_na_tradeflows.xlsx');
+na_tradeflows_2012 = table2array(removevars(na_tradeflows_2012, 'Var1'));
 
+
+cd C:\Users\James\Dropbox\SchoolFolder\SYP\modules
 
 N=31*2; %Number of sector location pairs. Will need to change this if 
         %disaggregating the data. This is for province level
@@ -50,21 +57,27 @@ vashare_a = 1 - phi_aa - phi_na ;
 %period.
 
 %Setting data in vector format
-
+%gross output:
 nomGDP = zeros(N, 3) ; 
-nomGDP(:, 1) = [master_raw.nomY_ag_2000 ; master_raw.nomY_na_2000] ;
-nomGDP(:, 2) = [master_raw.nomY_ag_2005 ; master_raw.nomY_na_2005] ;
-nomGDP(:, 3) = [master_raw.nomY_ag_2010 ; master_raw.nomY_na_2010] ;
+nomGDP(:, 1) = [master_raw.nomY_ag_2000/vashare_a ; master_raw.nomY_na_2000/vashare_n] ;
+nomGDP(:, 2) = [master_raw.nomY_ag_2005/vashare_a ; master_raw.nomY_na_2005/vashare_n] ;
+nomGDP(:, 3) = [master_raw.nomY_ag_2010/vashare_a ; master_raw.nomY_na_2010/vashare_n] ;
+
+%Employment (in labour)
+L = zeros(N, 1) ;
+L(:, 1) = [master_raw.L_ag_2000 ; master_raw.L_na_2000] ; %for normalization only
+L(:, 2) = [master_raw.L_ag_2005 ; master_raw.L_na_2005] ;
+L(:, 3) = [master_raw.L_ag_2010 ; master_raw.L_na_2010] ;
 
 ag_share = zeros(N, 3) ; %
 ag_share(:, 1) = [master_raw.agspend_ag_2000 ; master_raw.agspend_na_2000] ;
 ag_share(:, 2) = [master_raw.agspend_ag_2005 ; master_raw.agspend_na_2005] ;
 ag_share(:, 3) = [master_raw.agspend_ag_2010 ; master_raw.agspend_na_2010] ;
 
-cost = ones(N, 2) ; %Normalized so that geometric average cost is one. Initial value doesn't matter. 
+cost = ones(N, 2) ; %Initial value (doesn't matter for the algorithm outcome at all) 
 
 
-%% Part One: solve for changes from 2000-2005 and 2005-2010
+%% Part Two: solve in changes from 2000-2005 and 2005-2010
 
 %1) %Matrix of total expenditures on sector s goods by (j, k). Rows will be sourcers,
 %columns will be where goods are sourced from
@@ -176,19 +189,21 @@ end
 
 total_flow_matrix(:, :, 1) = t_exp_matrix(:, :, 1).*tradeflow_num_matrix(:, :, 1)./p_index_matrix(:, :, 1) ;
 cost_new(:, 1) = transpose(sum(total_flow_matrix(:, :, 1), 1)) ;
-cost_new(1:N/2, 1) = cost_new(1:N/2, 1)/geomean(cost_new(1:(N/2-1), 1)) ;  %%normalizing so that geometric mean of chinese provinces is 1
-cost_new((N/2 + 1):N, 1) = cost_new((N/2 + 1):N, 1)/geomean(cost_new((N/2 + 1):(N-1), 1));
+cost_new(1:N/2, 1) = cost_new(1:N/2, 1)/mean(cost_new(1:(N/2-1), 1)) ;  %normalizing so average cost in China is 1 (for now)
+cost_new((N/2 + 1):N, 1) = cost_new((N/2 + 1):N, 1)/mean(cost_new((N/2 + 1):(N-1), 1));
 cnorm2005 = max(norm(cost_new(1:N/2, 1) - cost(1:N/2, 1)), norm(cost_new((N/2 + 1):N, 1) - cost((N/2 + 1):N, 1))) ; 
 cost(:, 1) = cost_new(: , 1); %Updating
 
 total_flow_matrix(:, :, 2) = t_exp_matrix(:, :, 2).*tradeflow_num_matrix(:, :, 2)./p_index_matrix(:, :, 2) ;
 cost_new(:, 2) = transpose(sum(total_flow_matrix(:, :, 2), 1)) ; %new value%
-cost_new(1:N/2, 2) = cost_new(1:N/2, 2)/geomean(cost_new(1:(N/2-1), 2)) ; %%normalizing so that geometric mean of chinese provinces is 1
-cost_new((N/2 + 1):N, 2) = cost_new((N/2 + 1):N, 2)/geomean(cost_new((N/2 + 1):(N-1), 2));
+cost_new(1:N/2, 2) = cost_new(1:N/2, 2)/mean(cost_new(1:(N/2-1), 2)) ; 
+cost_new((N/2 + 1):N, 2) = cost_new((N/2 + 1):N, 2)/mean(cost_new((N/2 + 1):(N-1), 2));
 cnorm2010 = max(norm(cost_new(1:N/2, 2) - cost(1:N/2, 2)), norm(cost_new((N/2 + 1):N, 2) - cost((N/2 + 1):N, 2))) ;
 cost(:, 2) = cost_new(: , 2); %Updating
 
 end
+
+%RENORMALIZATION SO THAT COSTS ARE CONSISTENT WITH CHOICE OF NUMERAIRE
 
 
 
@@ -218,10 +233,13 @@ master_raw_stacked.dpindex_ag =  NaN(N*3, 1) ;
 master_raw_stacked.dpindex_ag((N/2+1):(N/2 + N), 1)  = [(p_index_matrix(1:N/2, 1, 1)).^(-1) ; (p_index_matrix(1:N/2, 1, 2)).^(-1)] ;
 master_raw_stacked.dpindex_ag((2*N + 1):N*3, 1)  = [(p_index_matrix(1:N/2, 1, 1)).^(-1) ; (p_index_matrix(1:N/2, 1 , 2)).^(-1)] ;
 
+cd C:\Users\James\Dropbox\SchoolFolder\SYP\data\MyData
 writetable(master_raw, "constructed_output/master.xlsx")
 writetable(master_raw_stacked, "constructed_output/master_stacked.xlsx")
+cd C:\Users\James\Dropbox\SchoolFolder\SYP\modules
 
-%% Part 2: Solving for productivity in levels in 2000. 
+
+%% Part 3: Solving for productivity in levels in 2000 for estimation. 
 %%Normalization: spatial geometric mean of average cost will be 1
 %%Absorb preference parameters (i.e. demand shifters by location-specific
 %%good) into productivity term.
@@ -330,8 +348,8 @@ end
 
 total_flow_matrix(:, :, 1) = t_exp_matrix(:, :, 1).*tradeflow_num_matrix(:, :, 1)./p_index_matrix(:, :, 1) ;
 cost_new(:, 1) = transpose(sum(total_flow_matrix(:, :, 1), 1)) ;
-cost_new(1:N/2, 1) = cost_new(1:N/2, 1)/geomean(cost_new(1:(N/2-1), 1)) ;  %%normalizing so that geometric mean of chinese provinces is 1
-cost_new((N/2 + 1):N, 1) = cost_new((N/2 + 1):N, 1)/geomean(cost_new((N/2 + 1):(N-1), 1)); 
+cost_new(1:N/2, 1) = cost_new(1:N/2, 1)/mean(cost_new(1:(N/2-1), 1)) ;  %%normalizing so mean in chinese provinces is 1 (for now)
+cost_new((N/2 + 1):N, 1) = cost_new((N/2 + 1):N, 1)/mean(cost_new((N/2 + 1):(N-1), 1)); 
 cnorm = max(norm(cost_new(1:N/2, 1) - cost(1:N/2, 1)), norm(cost_new((N/2 + 1):N, 1) - cost((N/2 + 1):N, 1))) ; %updating norm for while loop condition
 cost(:, 1) = cost_new(: , 1);
 
@@ -359,8 +377,7 @@ master_raw_stacked.pindex_ag(1:N/2, 1) = (p_index_matrix(1:N/2, 1, 1)).^(-1) ;
 master_raw_stacked.pindex_ag((N + N/2 + 1):(2*N), 1) =  (p_index_matrix(1:N/2, 1, 1)).^(-1) ;
 
 
-%solving for cost using dcost
-
-
+%Writing
+cd C:\Users\James\Dropbox\SchoolFolder\SYP\data\MyData
 writetable(master_raw, "constructed_output/master.xlsx")
 writetable(master_raw_stacked, "constructed_output/master_stacked.xlsx")

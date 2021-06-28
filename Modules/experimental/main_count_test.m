@@ -5,7 +5,7 @@
 %Changes in migration costs.
 
 %Date created: June 15th, 2021
-%Date modified: June 23rd, 2021
+%Date modified: June 18th, 2021
 
 
 global N parameters co_obj tradec tradef migc migf
@@ -72,9 +72,9 @@ tradec.na_2002 = table2array(readtable('constructed_output/HRtau_na_2002'));
 tradec.na_2007 = table2array(readtable('constructed_output/HRtau_na_2007'));
 
 tradef=struct ;
-tradef.ag_2002 = readtable('2002_ag_tradeflows.xlsx');
+tradef.ag_2002 = readtable('2002_na_tradeflows.xlsx');
 tradef.ag_2002 = table2array(removevars(tradef.ag_2002, 'Var1'));
-tradef.ag_2007 = readtable('2007_ag_tradeflows.xlsx');
+tradef.ag_2007 = readtable('2007_na_tradeflows.xlsx');
 tradef.ag_2007 = table2array(removevars(tradef.ag_2007, 'Var1'));
 tradef.na_2002 = readtable('2002_na_tradeflows.xlsx');
 tradef.na_2002 = table2array(removevars(tradef.na_2002, 'Var1'));
@@ -179,8 +179,8 @@ clearvars -except co_obj migc migf tradec tradef master master_noint N parameter
 %initial values for gross output per worker. 
 Lab_2005 = co_obj.emp_lab_2005 ;
 dLab_2005 = co_obj.emp_lab_2005./co_obj.emp_lab_2000 ;
-nY_2005 = (co_obj.nomY_2005) ; %Initial values for gross output
-dVA_2005 = (co_obj.nomY_2005./co_obj.nomY_2000) ; %Initial values for aggregate change in VA/gross output
+nY_2005 = ones(N/2, 2) ; %Initial values for gross output
+dVA_2005 = (nY_2005./co_obj.nomY_2000) ; %Initial values for aggregate change in VA/gross output
 
 
 Labnorm_2005 = 1 ;
@@ -217,11 +217,11 @@ cnorm_2005 = 1 ;
 
 %IN LOOP: TOTAL TFP, CAPITAL, TRADE COSTS
 while cnorm_2005 > 0.00001 %Margin of error for fixed point in determining marginal costs.  
-    cost_2005_new(:, 1) = (dVA_2005(:, 1).^(parameters.vashare_a))./((dLab_2005(:, 1).^(parameters.lab_ag)).*(co_obj.dK_2005(:, 1).^(parameters.cap_ag)).*(dCommercial_land_2005(:, 1).^(parameters.land_ag))) ;
-    cost_2005_new(:, 1) = (cost_2005_new(:, 1).*(p_index_ag(cost_2005(:, 1), 2005).^(parameters.phi_aa)).*(p_index_na(cost_2005(:, 2), 2005).^(parameters.phi_na)))./(co_obj.dTFP_2005(:, 1).*(dLab_2005(:, 1)./dCommercial_land_2005(:, 1)).^(parameters.alpha_ag)) ;
+    cost_2005_new(:, 1) = (dVA_2005(:, 1).^(parameters.vashare_a))./((dLab_2005(:, 1).^(parameters.vashare_a))) ;
+    cost_2005_new(:, 1) = (cost_2005_new(:, 1).*(p_index_ag(cost_2005(:, 1), 2005).^(parameters.phi_aa)).*(p_index_na(cost_2005(:, 2), 2005).^(parameters.phi_na)))./(co_obj.dTFP_2005(:, 1)) ;
     
-    cost_2005_new(:, 2) = (dVA_2005(:, 2).^(parameters.vashare_n))./((dLab_2005(:, 2).^(parameters.lab_na)).*(co_obj.dK_2005(:, 2).^(parameters.cap_na)).*(dCommercial_land_2005(:, 2).^(parameters.land_na))) ;
-    cost_2005_new(:, 2) = (cost_2005_new(:, 2).*(p_index_ag(cost_2005(:, 1), 2005).^(parameters.phi_an)).*(p_index_na(cost_2005(:, 2), 2005).^(parameters.phi_nn)))./(co_obj.dTFP_2005(:, 2).*(dLab_2005(:, 2)./dCommercial_land_2005(:, 2)).^(parameters.alpha_na)) ;
+    cost_2005_new(:, 2) = (dVA_2005(:, 2).^(parameters.vashare_n))./((dLab_2005(:, 2).^(parameters.vashare_n))) ;
+    cost_2005_new(:, 2) = (cost_2005_new(:, 2).*(p_index_ag(cost_2005(:, 1), 2005).^(parameters.phi_an)).*(p_index_na(cost_2005(:, 2), 2005).^(parameters.phi_nn)))./(co_obj.dTFP_2005(:, 2)) ;
     
     cnorm_2005 = max(norm(cost_2005_new(:,1) - cost_2005(:, 1)), norm(cost_2005_new(:,2) - cost_2005(:, 2))) ; %Updating norm
     cost_2005 = cost_2005_new ;   %Updating cost values. 
@@ -230,22 +230,6 @@ end
 %Updating p_index values. 
 dP_index_2005 = [p_index_ag(cost_2005(:, 1), 2005) , p_index_na(cost_2005(:, 2), 2005)] ;
 
-%__________________________________________________________________________
-%3: Calculating compensating variation + fall in ag. consumption shares. 
-
-%3.1 Compensating variation measure.  
-%dCompvariation_2005(:, 1) = (dVA_2005(:, 1)./dLab_2005(:, 1))./((((co_obj.Agspend_2000(:, 1).*(dP_index_2005(:, 1).^(1-parameters.eta)) + (ones(N/2, 1) - co_obj.Agspend_2000(:, 1)).*(dP_index_2005(:, 2).^(1 - parameters.eta))).^(1/(1-parameters.eta))).^(parameters.nu)).*(dRental_rate_2005(:, 1)).^(1-parameters.nu)) ;
-%dCompvariation_2005(:, 2) = (dVA_2005(:, 2)./dLab_2005(:, 2))./((((co_obj.Agspend_2000(:, 2).*(dP_index_2005(:, 1).^(1-parameters.eta)) + (ones(N/2, 1) - co_obj.Agspend_2000(:, 2)).*(dP_index_2005(:, 2).^(1 - parameters.eta))).^(1/(1-parameters.eta))).^(parameters.nu)).*(dRental_rate_2005(:, 1)).^(1-parameters.nu)) ;
-    
-    %3.2 Solving for agricultural consumption shares
-%for i = 1:30 %30 provinces. Make international ag consumption share unchanged.
-%    for k = 1:2 % sectors
-%     syms x
-%     Agshare_2005(i, k) = vpasolve(log(x) - parameters.epsilon*log(1-x) - (1-parameters.eta)*log(dP_index_2005(i, 1)/dP_index_2005(i, 2)) - (1-parameters.eta)*(1-parameters.epsilon)*log((dVA_2005(i, k)/dLab_2005(i, k))/dP_index_2005(i, 2)) - log(co_obj.Agspend_2000(i, k)) + parameters.epsilon*log(1 - co_obj.Agspend_2000(i, k)) == 0, x, [-Inf, Inf]) ;
-%   end
-%end
-
-%__________________________________________________________________________
 %4: Calculating new dnomY allocation from goods market clearing. 
 %Structure for matrix: [prov1_ag, prov2_ag, prov3_ag... prov1_na, etc]
 MarketClear = zeros(N, N) ; %matrix to arrive at market clearing, rowsum will be sum of payments to location sector i
@@ -254,7 +238,7 @@ MarketClear = zeros(N, N) ; %matrix to arrive at market clearing, rowsum will be
 %CHANGING!
 temp_cost_2005 = repelem([cost_2005(:, 1)' , cost_2005(:, 2)'], N, 1).^(-parameters.theta) ; 
 temp_2005_tc = [tradec.ag_2007./tradec.ag_2002, tradec.na_2007./tradec.na_2002; tradec.ag_2007./tradec.ag_2002, tradec.na_2007./tradec.na_2002].^(-1) ; %NOTE: No trade costs in some specifications
-temp_2000_tf = [tradef.ag_2002, tradef.na_2002; tradef.ag_2002, tradef.na_2002] ;
+temp_2000_tf = [tradef.na_2002, tradef.na_2002; tradef.na_2002, tradef.na_2002] ;
 temp_2005_pi = [repelem(dP_index_2005(:, 1), 1 , N/2), repelem(dP_index_2005(:, 2), 1 , N/2) ; repelem(dP_index_2005(:, 1), 1 , N/2), repelem(dP_index_2005(:, 2), 1 , N/2)].^(-parameters.theta) ;
 Tradeshare_2005 = (temp_cost_2005.*temp_2005_tc.*temp_2000_tf)./temp_2005_pi ;
 %4.2 Constructing matrix of spending allocations
@@ -288,7 +272,7 @@ nY_2005_new(:, 2) = MarketClear([((N/2)+1):N])' ;
 
 %__________________________________________________________________________
 %6: Checking norm + updating values 
-nY_norm_2005 = norm(nY_2005_new - nY_2005, 1) 
+nY_norm_2005 = norm(nY_2005_new - nY_2005, 1)
 %Labnorm_2005 = norm(Lab_2005_new - Lab_2005, 1) 
 
 nY_2005 = nY_2005_new ;
