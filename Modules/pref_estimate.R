@@ -29,7 +29,9 @@ theta = 4 #Simonovska and Waugh (20xx)
 
 #Estimates epsilon_a and eta as per the paper.
 #Date created: May 28th, 2021
-#Date edited: June 15th, 2021
+#Date edited: July 4th, 2021
+
+loadBootstrap = 1 #Set to 0 if you want to run bootstrap command. 
 
 setwd("C:/Users/James/Dropbox/SchoolFolder/SYP/data/MyData")
 
@@ -62,7 +64,7 @@ master["FE_ag"] <- ifelse(master$sector == "ag", 1, 0)
 #With income per capita omitted.
 share_omitted <- lm_robust(log_relspend~log_relprice + FE_2005 + FE_2010 + FE_ag, data = master, cluster = year,  se_type = "stata", alpha = 0.05)
 
-#Regression with relative spending vs real_gdp measures
+#Regression with relative spending vs real_gdp measures in Tombe and Zhu (2019)
 share_reg <- lm_robust(log_relspend~log_relprice + log_rY + FE_2005 + FE_2010 + FE_ag, data = master, cluster = year,  se_type = "stata", alpha = 0.05)
 
 #Rel employment regression
@@ -114,15 +116,24 @@ estimate_un_boot <- function(data, indices) {
   return(estimate_unc$par)
 }
 
-#bootstrapping output
+#BOOTSTRAPPING OUTPUT 
 set.seed(4321)
-#estimate_unc_bootstrap <- boot(data = master_sub_na, statistic = estimate_un_boot, R = 5000)
-#saving bootstrap output
-#save(estimate_unc_bootstrap, file = "constructed_output/unc_bootstrap_Robject.Rda")
+if (loadBootstrap == 0) {
+  estimate_unc_bootstrap <- boot(data = master_sub_na, statistic = estimate_un_boot, R = 5000)
+  #saving bootstrap output
+  save(estimate_unc_bootstrap, file = "constructed_output/unc_bootstrap_Robject.Rda")  
+}  else {
+  load("constructed_output/unc_bootstrap_Robject.Rda")
+}
+
 #confidence intervals
-#boot.ci(estimate_unc_bootstrap, conf = 0.99, index = 1, type = "all")
-#boot.ci(estimate_unc_bootstrap, conf = 0.99, index = 2, type = "all")
-#print(estimate_unc_bootstrap)
+boot.ci(estimate_unc_bootstrap, conf = 0.99, index = 1, type = "all")
+boot.ci(estimate_unc_bootstrap, conf = 0.99, index = 2, type = "all")
+boot.ci(estimate_unc_bootstrap, conf = 0.99, index = 3, type = "all")
+boot.ci(estimate_unc_bootstrap, conf = 0.99, index = 4, type = "all")
+boot.ci(estimate_unc_bootstrap, conf = 0.99, index = 5, type = "all")
+boot.ci(estimate_unc_bootstrap, conf = 0.99, index = 6, type = "all")
+print(estimate_unc_bootstrap)
 
 #Checking correlation with real income. 
 master["log_Model_consumption_index"] <- master$log_EPa + (1/(1-estimate_unc$par[2]))*master$log_naspend
@@ -179,13 +190,27 @@ estimate_nlscon <- function(data, ini) {
 #____________________________________________________________________________________________________________
 #estimating
 
-
 init <- c(2, 1.1, 0, 0, 0, 0) #Set initial value near best point estimate
 
 #fmincon appears to have the highest performance and speed here, even without supplying gradient.
 estimate_nls <- estimate_nlscon(master, init) 
 
-#to do: sensitivity analysis for point estimate using random initial conditions. 
+#Sensitivity analysis for point estimate using random initial conditions. 
+set.seed(4231)
+#sensitivity = list()
+#Sample of 50 initial conditions. Takes quite long to run.  
+#for (r in c(1:50)) {  
+#  ie = abs(rnorm(2, sd=1, mean=1))  #Initial values centered at (about) 1 and forced positive for eps and eta
+#  ir = rnorm(4, sd=2, mean=0) # Intercept terms can be any number centered at 0 (normal)
+#  init_loop = c(ie, ir)
+#  estimate_nls_loop <- try(estimate_nlscon(master, init_loop), silent = FALSE)
+#  if(inherits(estimate_nls_loop, "try-error"))
+#  {
+#    next #Skips if fmincon fails (due to machine precision error?)
+#  }
+#  sensitivity[[r]] <- c(estimate_nls_loop$par, estimate_nls_loop$value) #Looks good! seems we found a global maximum. 
+#}
+
 
 #Statistic function for bootstrap
 estimate_nls_boot <- function(data, indices) {
@@ -195,18 +220,32 @@ estimate_nls_boot <- function(data, indices) {
 }
 
 set.seed(4321)
-#estimate_nls_bootstrap <- boot(data = master, statistic = estimate_nls_boot, R = 1000) #bootstrap takes forever with this model-- and estimates are extremely topheavy
-#boot.ci(estimate_nls_bootstrap, conf = 0.99, index = 1, type = "all")
-#boot.ci(estimate_nls_bootstrap, conf = 0.99, index = 2, type = "all")
-#Saving boot object so program doesn't need to rerun
-#save(estimate_nls_bootstrap, file = "constructed_output/nls_bootstrap_Robject.Rda")
+if (loadBootstrap == 0) {
+  estimate_nls_bootstrap <- boot(data = master, statistic = estimate_nls_boot, R = 1000)
+  #saving bootstrap output
+  save(estimate_nls_bootstrap, file = "constructed_output/nls_bootstrap_Robject.Rda")  
+  
+  
+}  else {
+  load("constructed_output/nls_bootstrap_Robject.Rda")
+}
+
+boot.ci(estimate_nls_bootstrap, conf = 0.99, index = 1, type = "all")
+boot.ci(estimate_nls_bootstrap, conf = 0.99, index = 2, type = "all")
+boot.ci(estimate_nls_bootstrap, conf = 0.99, index = 3, type = "all")
+boot.ci(estimate_nls_bootstrap, conf = 0.99, index = 4, type = "all")
+boot.ci(estimate_nls_bootstrap, conf = 0.99, index = 5, type = "all")
+boot.ci(estimate_nls_bootstrap, conf = 0.99, index = 6, type = "all")
+print(estimate_nls_bootstrap)
 
 #Correlation with model implied index and actual observed real GDP measures performs well w/ entire sample.
-
 master["log_Model_consumption_index_nls"] <- master$log_EPa + (1/(1-estimate_nls$par[2]))*master$log_naspend
 check_reg2 <- lm_robust(log_Model_consumption_index_nls~log_rY, data = master)
 
-
+#Exporting with GGplot
+ggplot(master, aes(x=log_rY, y=log_Model_consumption_index_nls)) + geom_point()  + 
+  geom_smooth(method="lm") + labs(x="Log(Real GDP per capita)", y="Log(Model Implied Utility Index)")
+ggsave("model_implied_index.png")
 
 #___________________________________________________________________________________________________________________
 #PART 3: Estimating productivity growth assuming change in relative prices from Groningen 10 sector database
@@ -244,12 +283,9 @@ rel_priceag_2010 <- unname(rel_priceag_2010) #rel price of ag increased by 17% i
 #decreases being biased toward non-agriculture. The following correction must be done for results that make sense.
 
 #Corrected adjustment measure for change in relative prices
- 
-  
-
 master["drelprice"] <- rep(NA, nrow(master))
 master$drelprice[master$year == 2005] <- exp(master$log_relprice[master$year == 2005] - master$log_relprice[master$year == 2000])
-rel_priceag_2005_corrected <- rel_priceag_2005/mean(master$drelprice[master$year == 2005])
+rel_priceag_2005_corrected <- rel_priceag_2005/mean(master$drelprice[master$year == 2005]) #Calculating average fall in relative prices. 
 master$drelprice[master$year == 2005] <- rel_priceag_2005*master$drelprice[master$year == 2005]/mean(master$drelprice[master$year == 2005]) #renormalizing so that average change in log relative prices is what is observed above
 master$drelprice[master$year == 2010] <- exp(master$log_relprice[master$year == 2010] - master$log_relprice[master$year == 2005])
 rel_priceag_2010_corrected <- rel_priceag_2010/mean(master$drelprice[master$year == 2010])
@@ -280,12 +316,12 @@ na_ipgrowth_2010 <- exp((1/((1-estimate_nls$par[2])*(estimate_nls$par[1] - 1)))*
 
 
 master["relspend_error_Gn_unc"] <- rep(NA, nrow(master)) 
-master$relspend_error_Gn_unc[master$year == 2005] <- (master$log_relemp[master$year == 2005] - master$log_relemp[master$year == 2000]) - 
+master$relspend_error_Gn_unc[master$year == 2005] <- (master$log_relspend[master$year == 2005] - master$log_relspend[master$year == 2000]) - 
                                                      (1-estimate_unc$par[2])*(log(master$drelprice[master$year == 2005])) -
                                                      (1-estimate_unc$par[2])*(estimate_unc$par[1] - 1)*(master$log_Model_consumption_index[master$year == 2005] - master$log_Model_consumption_index[master$year == 2000])
 
 
-master$relspend_error_Gn_unc[master$year == 2010] <- (master$log_relemp[master$year == 2010] - master$log_relemp[master$year == 2005]) - 
+master$relspend_error_Gn_unc[master$year == 2010] <- (master$log_relspend[master$year == 2010] - master$log_relspend[master$year == 2005]) - 
                                                      (1-estimate_unc$par[2])*(log(master$drelprice[master$year == 2010])) -
                                                      (1-estimate_unc$par[2])*(estimate_unc$par[1] - 1)*(master$log_Model_consumption_index[master$year == 2010] - master$log_Model_consumption_index[master$year == 2005])
 
@@ -302,3 +338,5 @@ colnames(export) <- c("Theta", "Epsilon_nls", "Eta_nls", "Gn_2005_nls", "Gn_2010
 
 
 write_xlsx(export, path = "constructed_output/pref_estimates.xlsx")
+
+

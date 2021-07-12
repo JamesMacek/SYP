@@ -1,4 +1,10 @@
 
+% Date created: July 9th, 2021
+% Date edited: July 11th, 2021 
+
+%Calculates the (unique) levels of GDP in each province sector to balance
+%trade. 
+
 %Importing data on GDP by sector and province. 
 cd C:\Users\James\Dropbox\SchoolFolder\SYP\data\MyData
 
@@ -115,3 +121,5 @@ end
 
 TrGDP_2000 = mean([nomGDP([1:30], 1) ; nomGDP([32:61], 1)], 'all')*TrGDP_2000/(mean([TrGDP_2000([1:30], 1) ; TrGDP_2000([32:61], 1)], 'all')) ;
 scatter(TrGDP_2000, nomGDP(:, 1)) ;
+
+cd C:\Users\James\Dropbox\SchoolFolder\SYP\modules\data\MyData\constructed_output

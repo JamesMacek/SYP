@@ -1,5 +1,5 @@
 #Date created: June 12th 2021
-#Date modified: June 14th 2021
+#Date modified: July 6th 2021
 
 library(ggplot2)
 library(readxl)
@@ -69,15 +69,12 @@ master["Va_perworker"] <- rep(NA, nrow(master))
 master$Va_perworker[master$province != "International"] <- master$nomY[master$province != "International"]/master$L[master$province != "International"]
 
 master$nomY[master$province == "International" & master$year == 2000] <- 60*master$nomY[master$province == "International" & master$year == 2000]/sum(master$Va_perworker[master$year == 2000 & master$province != "International"])
-master$Trbalance[master$year == 2000] <- 60*master$Trbalance[master$year == 2000]/sum(master$Va_perworker[master$year == 2000 & master$province != "International"])
 master$Va_perworker[master$year == 2000 & master$province != "International"] <- 60*master$Va_perworker[master$year == 2000 & master$province != "International"]/sum(master$Va_perworker[master$year == 2000 & master$province != "International"])
 
 master$nomY[master$province == "International" & master$year == 2005] <- 60*master$nomY[master$province == "International" & master$year == 2005]/sum(master$Va_perworker[master$year == 2005 & master$province != "International"])
-master$Trbalance[master$year == 2005] <- 60*master$Trbalance[master$year == 2005]/sum(master$Va_perworker[master$year == 2005 & master$province != "International"])
 master$Va_perworker[master$year == 2005 & master$province != "International"] <- 60*master$Va_perworker[master$year == 2005 & master$province != "International"]/sum(master$Va_perworker[master$year == 2005 & master$province != "International"])
 
 master$nomY[master$province == "International" & master$year == 2010] <- 60*master$nomY[master$province == "International" & master$year == 2010]/sum(master$Va_perworker[master$year == 2010 & master$province != "International"])
-master$Trbalance[master$year == 2010] <- 60*master$Trbalance[master$year == 2010]/sum(master$Va_perworker[master$year == 2010 & master$province != "International"])
 master$Va_perworker[master$year == 2010 & master$province != "International"] <- 60*master$Va_perworker[master$year == 2010 & master$province != "International"]/sum(master$Va_perworker[master$year == 2010 & master$province != "International"])
 
 #Expressing nomY in terms of gross output
@@ -276,12 +273,6 @@ master_unstacked$nomY_ag_2005 <- master$nomY[master$sector == "ag" & master$year
 master_unstacked$nomY_na_2005 <- master$nomY[master$sector == "na" & master$year == 2005]
 master_unstacked$nomY_ag_2010 <- master$nomY[master$sector == "ag" & master$year == 2010]
 master_unstacked$nomY_na_2010 <- master$nomY[master$sector == "na" & master$year == 2010]
-master_unstacked$Trbalance_ag_2000 <- master$Trbalance[master$sector == "ag" & master$year == 2000]
-master_unstacked$Trbalance_na_2000 <- master$Trbalance[master$sector == "na" & master$year == 2000]
-master_unstacked$Trbalance_ag_2005 <- master$Trbalance[master$sector == "ag" & master$year == 2005]
-master_unstacked$Trbalance_na_2005 <- master$Trbalance[master$sector == "na" & master$year == 2005]
-master_unstacked$Trbalance_ag_2010 <- master$Trbalance[master$sector == "ag" & master$year == 2010]
-master_unstacked$Trbalance_na_2010 <- master$Trbalance[master$sector == "na" & master$year == 2010]
 
 #2)Updating costs/price indicies by sector_year
 master_unstacked$dcost_ag_2005 <- master$dcost[master$year == 2005 & master$sector == "ag"]

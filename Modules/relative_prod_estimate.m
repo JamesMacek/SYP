@@ -15,7 +15,6 @@ cd C:\Users\James\Dropbox\SchoolFolder\SYP\data\MyData
 
 master_raw =  readtable('master_raw.xlsx') ;
 master_raw_stacked = readtable('master_raw_stacked.xlsx') ;
-%master_raw_stacked = readtable('master_raw_stacked.xlsx') ;
 tau_ag_2002 = table2array(readtable('constructed_output/HRtau_ag_2002'));
 tau_ag_2007 = table2array(readtable('constructed_output/HRtau_ag_2007'));
 tau_ag_2012 = table2array(readtable('constructed_output/HRtau_ag_2012'));
@@ -77,7 +76,7 @@ ag_share(:, 3) = [master_raw.agspend_ag_2010 ; master_raw.agspend_na_2010] ;
 cost = ones(N, 2) ; %Initial value (doesn't matter for the algorithm outcome at all) 
 
 
-%% Part Two: solve in changes from 2000-2005 and 2005-2010
+%% Part One: solve in changes from 2000-2005 and 2005-2010
 
 %1) %Matrix of total expenditures on sector s goods by (j, k). Rows will be sourcers,
 %columns will be where goods are sourced from
@@ -366,7 +365,7 @@ master_raw_stacked.cost(1:N/2, 1) = cost(1:N/2, 1) ;
 master_raw_stacked.cost((N + N/2 + 1):(2*N), 1) = cost((N/2 + 1):N, 1) ;
 
 master_raw.pindex_na_2000 = (p_index_matrix(1:N/2, N/2 + 1, 1)).^(-1) ; 
-master_raw.pindex_ag_2000 = (p_index_matrix(1:N/2, 1, 1)).^(-1) ;
+master_raw.pindex_ag_2000 = (p_index_matrix(1:N/2, N/2 + 1, 1)).^(-1) ;
 
 master_raw_stacked.pindex_na = NaN(N*3, 1) ;
 master_raw_stacked.pindex_na(1:N/2, 1) = (p_index_matrix(1:N/2, N/2 + 1, 1)).^(-1) ;
