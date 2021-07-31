@@ -3,7 +3,7 @@
 % Date edited: July 11th, 2021 
 
 %Calculates the (unique) levels of GDP in each province sector to balance
-%trade. 
+%trade. Used in the counterfactual excercise. 
 
 %Importing data on GDP by sector and province. 
 cd C:\Users\James\Dropbox\SchoolFolder\SYP\data\MyData
@@ -122,4 +122,15 @@ end
 TrGDP_2000 = mean([nomGDP([1:30], 1) ; nomGDP([32:61], 1)], 'all')*TrGDP_2000/(mean([TrGDP_2000([1:30], 1) ; TrGDP_2000([32:61], 1)], 'all')) ;
 scatter(TrGDP_2000, nomGDP(:, 1)) ;
 
-cd C:\Users\James\Dropbox\SchoolFolder\SYP\modules\data\MyData\constructed_output
+
+%%Normalizing so that value added per worker in China is on average 1 in all years
+TrGDP_2000 = TrGDP_2000/(mean([vashare_a*TrGDP_2000([1:30], 1)./L([1:30], 1) , vashare_n*TrGDP_2000([32:61], 1)./L([32:61], 1)], 'all')) ;
+TrGDP_2005 = TrGDP_2005/(mean([vashare_a*TrGDP_2005([1:30], 1)./L([1:30], 2) , vashare_n*TrGDP_2005([32:61], 1)./L([32:61], 2)], 'all')) ;
+TrGDP_2010 = TrGDP_2010/(mean([vashare_a*TrGDP_2010([1:30], 1)./L([1:30], 3) , vashare_n*TrGDP_2010([32:61], 1)./L([32:61], 3)], 'all')) ;
+
+cd C:\Users\James\Dropbox\SchoolFolder\SYP\data\MyData\constructed_output
+stacked_GDP = [TrGDP_2000([1:31], 1) ; TrGDP_2005([1:31], 1) ;  TrGDP_2010([1:31], 1) ; TrGDP_2000([32:62], 1) ; TrGDP_2005([32:62], 1) ;  TrGDP_2010([32:62], 1)] ;
+Output = table(master_raw_stacked.province, master_raw_stacked.sector, master_raw_stacked.year, stacked_GDP) ;
+Output.Properties.VariableNames = {'province', 'sector', 'year', 'nomY'} ;
+
+writetable(Output, "Calibrated_GDP_balanced.xlsx") 

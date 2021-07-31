@@ -5,6 +5,7 @@ library(tidyverse)
 library(estimatr)
 
 
+
 ################PART 1######################################
 ### Setting Working Directory
 
@@ -80,6 +81,7 @@ data2plot["na_emp_cont_2005"] <- (data2plot$Ln2005 - data2plot$Ln2000)/(data2plo
 data2plot["ag_emp_cont_2010"] <- (data2plot$La2010 - data2plot$La2005)/(data2plot$La2005 + data2plot$Ln2005)
 data2plot["na_emp_cont_2010"] <- (data2plot$Ln2010 - data2plot$Ln2005)/(data2plot$La2005 + data2plot$Ln2005)
 
+#Check how growth rates in ag/nonag are contributing.  
 
 ag_glm_2005 <- lm_robust(ag_emp_cont_2005 ~ Emp_density_2000, data=data2plot)
 na_glm_2005 <-  lm_robust(na_emp_cont_2005 ~ Emp_density_2000, data=data2plot)
@@ -96,10 +98,6 @@ ggplot(data2plot, aes(x=Emp_density_2000, y=ag_emp_cont_2005)) + geom_point() +
   geom_smooth(method="lm") + labs(x="Employment Density, 2000", y="Agriculture Contribution to Employment growth, 2000-2005")
 ggsave("ag_cont_growth_density.png")
 
-
-
-
-
 #####################################################################################
 
 ##Checking data implied structural change
@@ -115,4 +113,13 @@ empdens_disp_2005 <- sd(data2plot_noint$Emp_density_2005)/mean(data2plot_noint$E
 empdens_disp_2010 <- sd(data2plot_noint$Emp_density_2010)/mean(data2plot_noint$Emp_density_2010)
 #Increases by 12 pp. There is a 12 ppoint increase in sd relative to mean of population density across provinces. 
 
+#Checking how much agricultural spending shares fell, how this related to pop density/realGDP
+emp_GDP_data_noint <- emp_GDP_data[!emp_GDP_data$province %in% "International",]
+
+#Average ag spending share (to lazy to calculate true aggregate spending share)
+avgspend_2000 <- (1/2)*(mean(emp_GDP_data_noint$agspend_ag_2000) + mean(emp_GDP_data_noint$agspend_na_2000))
+avgspend_2005 <- (1/2)*(mean(emp_GDP_data_noint$agspend_ag_2005) + mean(emp_GDP_data_noint$agspend_na_2005))
+avgspend_2010 <- (1/2)*(mean(emp_GDP_data_noint$agspend_ag_2010) + mean(emp_GDP_data_noint$agspend_na_2010)) #Fell 3 percent per year vs aggregate fall of
+
+#
 

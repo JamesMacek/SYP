@@ -29,9 +29,9 @@ theta = 4 #Simonovska and Waugh (20xx)
 
 #Estimates epsilon_a and eta as per the paper.
 #Date created: May 28th, 2021
-#Date edited: July 4th, 2021
+#Date edited: July 12th, 2021
 
-loadBootstrap = 1 #Set to 0 if you want to run bootstrap command. 
+loadBootstrap = 0 #Set to 0 if you want to run bootstrap command. 
 
 setwd("C:/Users/James/Dropbox/SchoolFolder/SYP/data/MyData")
 
@@ -197,6 +197,7 @@ estimate_nls <- estimate_nlscon(master, init)
 
 #Sensitivity analysis for point estimate using random initial conditions. 
 set.seed(4231)
+
 #sensitivity = list()
 #Sample of 50 initial conditions. Takes quite long to run.  
 #for (r in c(1:50)) {  

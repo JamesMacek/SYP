@@ -6,7 +6,7 @@
 
 
 %Date created: June 15th, 2021
-%Date modified: July 5th, 2021
+%Date modified: July 24th, 2021
 
 
 
@@ -69,6 +69,8 @@ parameters.nu = 0.87 ; %non-housing expenditure share
 %Reading data 
 %master data 
 master =  readtable('constructed_output/master2.xlsx') ;
+calibrated_GDP_tradebalance = readtable('constructed_output/Calibrated_GDP_balanced.xlsx') ;
+
 master(31, :) = [] ;
 master_noint = master ;
 master = readtable('constructed_output/master2.xlsx') ;
@@ -175,9 +177,10 @@ co_obj.RdTFP_2005 = co_obj.dTFP_2005 ;
 co_obj.RdTFP_2005(:, 1) = co_obj.RdTFP_2005(:, 1)/mean(co_obj.RdTFP_2005(:, 1), 'all') ;
 co_obj.RdTFP_2005(:, 2) = co_obj.RdTFP_2005(:, 2)/mean(co_obj.RdTFP_2005(:, 2), 'all') ;
 
-%Initial gross output values
-co_obj.nomY_2000 = [master.nomY_ag_2000 , master.nomY_na_2000] ;
-co_obj.nomY_2005 = [master.nomY_ag_2005 , master.nomY_na_2005] ;
+%Initial gross output values from GDP calibrated to satisfy market
+%clearing.
+co_obj.nomY_2000 = [calibrated_GDP_tradebalance.nomY([1:N/2], 1) , calibrated_GDP_tradebalance.nomY([(3/2*N+1):2*N], 1)] ;
+co_obj.nomY_2005 = [calibrated_GDP_tradebalance.nomY([(N/2 + 1):N], 1) , calibrated_GDP_tradebalance.nomY([(2*N+1):(5/2)*N], 1)] ;
 
 co_obj.Agspend_2000 = [master.agspend_ag_2000, master.agspend_na_2000] ;
 co_obj.Agspend_2005 = [master.agspend_ag_2005, master.agspend_na_2005] ;
@@ -251,7 +254,7 @@ Agshare_2005(N/2, [1:2]) = co_obj.Agspend_2005(N/2, [1:2]) ; %International spen
 % + Other objects
 dCommercial_land_2005 = ones(N/2, 2) ;
 dResidential_land_2005 = ones(N/2, 2) ; 
-options = optimoptions('fsolve','Display','none') ; %options for fsolve
+options = optimset('Display','none') ; %options for fsolve
 
 Lnorm_2005 = 1 ;
 while Lnorm_2005 > 0.00001
@@ -288,7 +291,7 @@ dP_index_2005 = [p_index_ag(cost_2005(:, 1), 2005) , p_index_na(cost_2005(:, 2),
 for i = 1:30 %30 provinces. Make international ag consumption share unchanged.
     for k = 1:2 % sectors
      fun = @(x) log(x) - parameters.epsilon*log(1 - x) - (1-parameters.eta)*log(dP_index_2005(i, 1)/dP_index_2005(i, 2)) - (1-parameters.eta)*(parameters.epsilon - 1)*log(dWage_2005(i, k)/dP_index_2005(i, 2)) - log(co_obj.Agspend_2000(i, k)) + parameters.epsilon*log(1 - co_obj.Agspend_2000(i, k)) ;
-     Agshare_2005(i, k) = fsolve(fun, 0.5, options) ; 
+     Agshare_2005(i, k) = fzero(fun, [0.001, .999], options) ; 
    end
 end
 
@@ -361,6 +364,7 @@ end %Ending migration market clearing process.
 %Calculating the coefficient of variation of population density
 Density = (Lab_2005([1:30], 1) + Lab_2005([1:30], 2))./co_obj.landmass ;
 Coeff_density(aprod, rprod, trc, mic) = std(Density)/mean(Density) ; %Inputting coefficient into table
+
 
 end
 end
