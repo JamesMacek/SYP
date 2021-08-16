@@ -29,9 +29,9 @@ theta = 4 #Simonovska and Waugh (20xx)
 
 #Estimates epsilon_a and eta as per the paper.
 #Date created: May 28th, 2021
-#Date edited: July 12th, 2021
+#Date edited: August 10th, 2021
 
-loadBootstrap = 0 #Set to 0 if you want to run bootstrap command. 
+loadBootstrap = 1 #Set to 0 if you want to run bootstrap command. 
 
 setwd("C:/Users/James/Dropbox/SchoolFolder/SYP/data/MyData")
 
@@ -256,16 +256,17 @@ rm(d_g10s_constructed)
 groningen_10s_CHN <- clean_names(groningen_10s_CHN)
 #constructing China wide na price index-- vashare weighted geometric average of price indices in all other 7 sectors (mining incl in primary industry) 
 #Omit government services because no price data. 
-groningen_10s_CHN["Price_na"] <- (groningen_10s_CHN$manufacturing_price*(groningen_10s_CHN$manufacturing_v_ashare) +
-                                 groningen_10s_CHN$utilities_price*(groningen_10s_CHN$utilities_v_ashare) +
-                                 groningen_10s_CHN$construction_price*(groningen_10s_CHN$construction_v_ashare) +
-                                 groningen_10s_CHN$trade_restaurants_and_hotels_price*(groningen_10s_CHN$trade_restaurants_and_hotels_v_ashare) +
-                                 groningen_10s_CHN$transport_storage_and_communication_price*(groningen_10s_CHN$transport_storage_and_communication_v_ashare) +
-                                 groningen_10s_CHN$finance_insurance_real_estate_and_business_services_price*(groningen_10s_CHN$finance_insurance_real_estate_and_business_services_v_ashare) +
-                                 groningen_10s_CHN$community_social_and_personal_services_price*(groningen_10s_CHN$community_social_and_personal_services_v_ashare))
+#Keep consumption weights at 2005 levels (i.e. use only 2005 levels of value added since prices are expressed relative to 2005)
+groningen_10s_CHN["Price_na"] <- (groningen_10s_CHN$manufacturing_price*(groningen_10s_CHN$manufacturing_v_ashare[groningen_10s_CHN$year == 2005]) +
+                                 groningen_10s_CHN$utilities_price*(groningen_10s_CHN$utilities_v_ashare[groningen_10s_CHN$year == 2005]) +
+                                 groningen_10s_CHN$construction_price*(groningen_10s_CHN$construction_v_ashare[groningen_10s_CHN$year == 2005]) +
+                                 groningen_10s_CHN$trade_restaurants_and_hotels_price*(groningen_10s_CHN$trade_restaurants_and_hotels_v_ashare[groningen_10s_CHN$year == 2005]) +
+                                 groningen_10s_CHN$transport_storage_and_communication_price*(groningen_10s_CHN$transport_storage_and_communication_v_ashare[groningen_10s_CHN$year == 2005]) +
+                                 groningen_10s_CHN$finance_insurance_real_estate_and_business_services_price*(groningen_10s_CHN$finance_insurance_real_estate_and_business_services_v_ashare[groningen_10s_CHN$year == 2005]) +
+                                 groningen_10s_CHN$community_social_and_personal_services_price*(groningen_10s_CHN$community_social_and_personal_services_v_ashare[groningen_10s_CHN$year == 2005]))
 
 #Adjusting for VASHARE of all these sectors
-groningen_10s_CHN$Price_na <- groningen_10s_CHN$Price_na/(1 - groningen_10s_CHN$agriculture_v_ashare - groningen_10s_CHN$mining_v_ashare - groningen_10s_CHN$government_services_v_ashare)
+groningen_10s_CHN$Price_na <- groningen_10s_CHN$Price_na/(1 - groningen_10s_CHN$agriculture_v_ashare[groningen_10s_CHN$year == 2005] - groningen_10s_CHN$mining_v_ashare[groningen_10s_CHN$year == 2005] - groningen_10s_CHN$government_services_v_ashare[groningen_10s_CHN$year == 2005])
 
 rel_price_china <- as.matrix(groningen_10s_CHN$agriculture_price/groningen_10s_CHN$Price_na)
 row.names(rel_price_china) <- as.matrix(groningen_10s_CHN$year)
@@ -276,8 +277,8 @@ rel_priceag_2005 <- rel_price_china["2005",]/rel_price_china["2000",]
 rel_priceag_2010 <- rel_price_china["2010",]/rel_price_china["2005",]
 rm(rel_price_china)
 
-rel_priceag_2005 <- unname(rel_priceag_2005) #rel price of ag increased by 9% in aggregate 2000-2005
-rel_priceag_2010 <- unname(rel_priceag_2010) #rel price of ag increased by 17% in aggregate 2005-2010
+rel_priceag_2005 <- unname(rel_priceag_2005) #rel price of ag increased by 8% in aggregate 2000-2005
+rel_priceag_2010 <- unname(rel_priceag_2010) #rel price of ag increased by 19% in aggregate 2005-2010
 
 #Finding the relative price in ag for the data that makes the average price of agriculture fall by observed amounts above
 #Note: price of agriculture increasing in master.data (especially in 2005-2010) after normalizing TFP growth because of changes in capital stock + trade costs 

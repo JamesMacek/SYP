@@ -1,6 +1,5 @@
 \documentclass[]{article}
 \usepackage{natbib}
-\usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{setspace}
 \usepackage{palatino}
@@ -10,20 +9,21 @@
 %opening
 
 
-\title{The Geographic Bias of Growth}
+\title{The Geographic Bias of Growth and Structural Change}
 \author{James Macek}
 \onehalfspacing
 \bibliographystyle{chicago}
 
+
+\usepackage{hyperref} %Load hyperref last for footnote linking to work as intended. 
 %Colours for hyperreferencing
 \hypersetup{
-	colorlinks=true,
-	linkcolor=blue,
-	filecolor=blue,      
-	urlcolor=blue,
-	citecolor=blue,
-	}
-
+colorlinks=true,
+linkcolor=blue,
+filecolor=blue,      
+urlcolor=blue,
+citecolor=blue,
+}
 
 \begin{document}
 \maketitle
@@ -33,28 +33,75 @@
 
 \end{abstract}
 
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%___INTRODUCTION____%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-\paragraph*{}
-Test citation \citet*{urbstruct} \citet{tombezhu} \cite{hao2020} \citep{eckertpeters} \citet{delventhalglobenet}
+
 \paragraph*{}
 Contemporary models of spatial equilibrium imply that productivity growth, when uniform across locations, does not change the overall distribution of economic activity in space. In this paper, I argue that this
  feature masks an important mechanism by which growth concentrates economic activity even when the spatial distribution of productivity remains unchanged. 
 \paragraph*{}
-The theory rests on two ideas. Firstly, growth changes the consumption basket; shifting expenditures away from food and toward other goods (Deaton?). This manifests in general equilibrium as \textit{structural change}, rationalizing both differences in agricultural employment across countries and time. On the other hand, agriculture shapes geography insofar as the returns to concentrating it in space are dwarfed by other sectors. Taken together, these imply that workers leaving agriculture during the structural change process are absorbed by regions with high population density. 
+The theory rests on two ideas. Firstly, growth changes the consumption basket; shifting expenditures away from food and toward other goods (Deaton?). This manifests in general equilibrium as \textit{structural change}, where agricultural employment falls relative to other sectors as the economy grows. On the other hand, demand for agriculture shapes geography insofar as the returns to concentrating it in space are dwarfed by other sectors. Taken together, these imply that workers leaving agriculture during the structural change process are absorbed by regions with high population density. 
 \paragraph*{}
 The link between structural transformation and urbanization has previously been explored in \citet{urbstruct}. In it, the high spatial concentration is driven by differences in land intensity and the spatial variance of productivity across sectors. As a consequence, population dense regions specialize outside of agriculture under trade and, conditional on specializing, have more dispersion in population densities. I build on this research in three ways. Firstly, I show theoretically that this effect need not rely on regional trade and specialization. Free trade mutes a consumption trade-off that underpins
  the choice to live in cities, which in the model have lower relative prices of non-agriculture products. Falling food expenditure shares make the penalty of locating in cities -- that is, high food prices -- less severe. 
 \paragraph*{}  
-
- Both motives for specialization and consumption operate under the assumption that productivity differences across locations exist. As a second contribution, I extend the theory so that an uneven population distribution arises in a model where locations are identical ex ante. Growth in this environment also has the effect of reallocating workers toward densely populated regions.
- 
+ Both motives for specialization and consumption operate under the assumption that productivity differences across locations exist. As a second contribution, I extend the theory so that an uneven population distribution arises in a model where locations are identical ex ante; in the spirit of the New Economic Geography (NEG) literature.  Growth in this environment also has the effect of reallocating workers toward densely populated regions.
  \paragraph*{}
- Thirdly, and most importantly, I quantify the magnitude of this effect by taking a spatial equilibrium model to Chinese data from 2000-2005. 
+ Thirdly, and most importantly, I quantify the magnitude of this effect by taking a spatial equilibrium model to Chinese data from 2000-2005. The model allows for falling migration and regional trade costs as alternative explanations for the reallocation of workers across space. I find that productivity growth, when uniform across locations and set to the observed average level, accounts for approximately 10 percent of the total rise in population density dispersion predicted by the model\footnote{The model I use is nonlinear, so there is some ambiguity surrounding the allocation of marginal effects between productivity growth, trade and migration costs. I report a conservative value here.}. In addition, the model is not calibrated to match the observed rise in population density dispersion, but accounts for over half of it.
+ \paragraph*{}
+ Why study China? During this period, the country saw a massive reallocation of workers toward the population-dense coastal provinces, such as Beijing, Shanghai and Guangdong. Such mobility was and is made exceptionally difficult by a unique institution-- the Hukou system \citep{Chinashukou60} \citep{hukoulaboutcome}. However, by the 2000's the Chinese government introduced significant reform, and there is some quantitative evidence that these reforms caused migration inflows \citep{Fan2018HukouRI}. At the very least, migration costs (measured by observing spatial differences in real income relative to migration flows) fell significantly during the period \citep{tombezhu}. These falling migration costs can increase the dispersion of population density as more workers arbitrage away spatial differences in real income. Moreover, \citet{tombezhu} also find that falling trade costs during this period were also significant; and falling trade costs are key in determining the spatial distribution of economic activity in the NEG literature. How does the impact of the theory stack up against these two variables, which themselves are largely influenced by policy? China provides a unique opportunity to answer this question.
+ \paragraph*{}
+ China also experienced rapid growth and structural change during this period. Output per worker rose about 70 percent, and primary sector employment fell about 6 percentage points from 53 percent.  These facts alone distinguish China as a country where this geographic bias of growth could play a major role in shaping the population distribution.
+ \paragraph*{}
+The strategy behind calibration starts with the fact that \textit{relative} productivity growth across space is identified using regional trade data and a standard gravity model. However, this procedure cannot identify \textit{aggregate} growth-- that is, a scale factor that determines productivity in absolute terms. I propose a new estimation strategy to bridge this gap. First, I estimate income and substitution elasticities over agricultural goods using GDP data and prices recovered from a gravity model. Given these estimates, I choose the level of aggregate productivity growth that matches the fall in average agricultural spending across space observed in the data. 
+ \paragraph*{}
+ Paper is organized... + longer introduction with more on methodology and contributions. This will take more time as I organize my thoughts. 
+
+
+\section{Literature}
+\paragraph*{}
+This paper lies at the heart of a budding literature on the interplay between structural change and geographic outcomes. The earliest of these frames structural change as the driver for spatial convergence in US earnings before 2000 \citep{casellicoleman}, which has subsequently been applied in China after 2000 \citep{hao2020}. In contrast to these papers, I focus on the population distribution rather than falling inequality. As a result, they do not emphasize the weaker returns to concentrating agriculture in space as I do. 
+\paragraph*{}
+Another strand of literature throws trade integration into the mix. \citet{urbwoindustrialization} show that specialization in non-industrial sectors under trade lead to higher non-tradables employment in  "consumption" cities; though space is not directly modeled. \citet{rfargentina} show that regions more integrated into world markets exhibit low agricultural employment shares because of both differences in land intensity and rising employment in non-traded sectors. Data limitations do not allow me to consider these Balassa-Samuelson effects. In addition, while I don't focus on international trade in the theory, it is empirically a force for suppressing agricultural employment in the coastal provinces because they import a significant amount of food.
+\paragraph*{}
+This literature also highlights dynamic productivity diffusion in space as drivers of structural change \citep{spatdev}  \citep{delventhalglobenet}. I abstract from the endogenous growth angle.
+\paragraph*{}
+Of this body of work, the most closely related are \citet{urbstruct}, \citet{MURATA2008} and \citet{eckertpeters}, whom explicitly study the effect of structural change on geography. I build on the mechanism driving spatial concentration in the first two by generalizing it to an environment where trade is very costly, and quantify its effects empirically. The third contains a negative result; that the spatial reallocation of workers accounted for essentially zero of US structural transformation since 1880\footnote{\citet{hao2020} show that this observation is does \textit{not} apply to China after 2000, citing larger inter-provincial migration flows associated with workers leaving the primary sector.}. In contrast, I ask how falling agricultural employment accounts for total spatial reallocation, rather than vice versa. I also pay specific attention to isolating the effect of growth and structural transformation by considering how geography changes when preserving the productivity distribution across space.
+\paragraph*{}
+This paper is nested within the broader literature on structural change, growth and the agricultural productivity gap\footnote{See \citet{hrvch6} for a recent review of the structural change literature. This includes \citet{ngaipissa}, \citet{boppart2014}, \citet{cominetal2021}, \citet{matsuyama1992, matsuyama2009, engelslawglobal}, \citet{uy2013}, \citet{bustos1996etal}, \citet{bustos2020etal}, \citet{swiecki2017}, \citet{loganetal}, \citet{cravinosotelo}  and \citet{duarterestuccia} FINISH.}. The general concern of these papers are macroeconomic outcomes, and use models where there are multiple sectors but no notion of space within countries\footnote{A notable exception is \citet{karadi2017cattle}, which links a disaggregated equilibrium in a monocentric city model to the aggregate production function to facilitate development accounting. While the research question is fundamentally different, their model also features a version of the spatial bias of growth -- see Proposition 3.}. However, the models that give rise to structural change are central to the equilibrium geography that I study here. In particular, I use the non-homothetic CES preferences of \citet{cominetal2021} and \citet{loganetal} and adapt their estimation strategy for the parameters to use with prices recovered from trade data. 
+\paragraph*{}
+While the model and methodology in this paper may come from elsewhere, I study a central question in economic geography -- how is the distribution of economic activity in space determined? I build on the models of \citet{krugman1991}, \citet{PUGA1999}, \citet{aggtraderev}, \citet{MURATA2008}, \citet{donalddavishme}\footnote{In particular, the model I present avoids the critique of the literature made in \citet{donalddavishme} -- that the home market effect arises as an artifact of the freely traded "outside" sector.} and subsequent work to answer this question. I also draw from recent spatial models that are rich enough to have an empirical implementation, including \citet{allenarkolakis}, \citet{redding2016}, \citet{nagyhinterlands}, \citet{pathdep}, \citet{geodev}, \citet{sotello2020} and importantly \citet{tombezhu}, \citet{hao2020}, \citet{MA2020} and \cite{Fan2019} in the context of China. Each employ a scheme to map observed data to unobservable parameters, which I use extensively for productivity, trade and migration costs. In particular, I draw heavily from the methodology and data choices in \citet{tombezhu}. The point of departure is the use of homothetic preferences\footnote{With the exception of \cite{hao2020}.}, so that any spatially uniform scaling of productivity do not change the equilibrium outcomes that I study. I generalize these empirical implementations to a model falling outside this common class.  
+\paragraph*{}
+Surrounding this central question is an empirically oriented literature in which transportation infrastucture is the main dependent variable. These include \citet{baumsnow2007}, \citet{durturner}, \citet{durturnerurb}, \citet{bs2020}, \citet{herzog2021}, \citet{faberb}, \citet{bart2018} and in particular \cite{bsetal2017} and \cite{bsetal2020} in the Chinese context. I compare the magnitude of the spatial bias of growth against the effects of falling trade costs (among other benefits) considered in these papers. Moreover, data constraints force me to consider a much larger level of spatial aggregation. 
+
+\section{Theory}
+\paragraph*{}
+To guide the methodology behind the counterfactual, I introduce a theory that captures when and how the geographic bias of growth will occur. At the heart of this theory is the idea that concentrating agriculture in space comes with a penality that is larger than other sectors. As a result, the intensity of agricultural consumption (or equivalently, employment in general equilibrium) will inversely affect how concentrated the geography will be. 
+\paragraph*{}
+The theory is segmented into two parts. The first part takes spatial variation in productivity as given, and the second allows for differences to arise endogenously in a model where pro-agglomeration forces takes center stage. I make this distinction because the former corresponds tightly to the empirical model in which productivity differences are evident. In particular, it does \textit{not} require spatial returns to be strong enough to destabilize a spatially symmetric equilibrium as in \citet{krugman1991}, \citet{PUGA1999} or \citet{MURATA2008}. All it requires is that spatial returns be less than and negative in the agricultural sector -- an assumption that is supported by the massive land share of income in Chinese agriculture.
+\paragraph*{}
+In each segment, I highlight the role of both the \textit{consumption} channel and the \textit{specialization} channel as forces that affect the distribution of employment. I make this distinction to show that the spatial bias of growth does not fundamentally rely on low trade frictions. This distinction is also a useful tool for interpreting the empirical model because it suggests that the results are not an artifact of the calibrated level of trade costs. To make the theory as simple as possible, I focus on a model with two locations, and isolate each channel under the assumption that regions are in autarky and then trade freely.
+\paragraph*{}
+To this end, define the set of locations $\{1, 2\}$, a set of sectors $\{a, n\}$ and assume there are a measure $L$ workers to be allocated to each of these sector-location pairs.
+
+\subsection*{Productivity Differences} Fix
+
+
+
+
+\newpage
+\section{Data}
+
+\section{Facts on Spatial concentration}
+
+\section{Structural Model}
 
 
 %%%BIBLIOGRAPHY%%%%%
 \newpage
+\nocite{*}
+\scriptsize
 \bibliography{references.bib}
 
 \end{document}

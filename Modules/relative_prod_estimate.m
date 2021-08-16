@@ -1,6 +1,6 @@
 
 %Date created: May 11th 2021
-%Date edited: June 25th 2021
+%Date edited: August 9th 2021
 
 %This file estimates marginal costs using the market clearing condition,
 %assuming exogenous (calibrated) deficits. Outputs the value of these deficits and 
@@ -242,8 +242,6 @@ cd C:\Users\James\Dropbox\SchoolFolder\SYP\modules
 %%Normalization: spatial geometric mean of average cost will be 1
 %%Absorb preference parameters (i.e. demand shifters by location-specific
 %%good) into productivity term.
-%%Assume it's time invariant. 
-
 
 cost = ones(N, 1) ;
 

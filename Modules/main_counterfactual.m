@@ -201,7 +201,8 @@ cd C:\Users\James\Dropbox\SchoolFolder\SYP\modules
 
 clearvars -except co_obj migc migf tradec tradef master master_noint N parameters
 
-Coeff_density = zeros(2, 2, 2, 2) ;
+Coeff_density = zeros(2, 2, 2, 2) ; %Coefficient of variation in population density
+wCoeff_density = zeros(2, 2, 2, 2) ; %Coefficient of variation weighted by employment
 
 %Absolute, relative productivity, trade costs and migration costs. 
 for aprod = 1:2 %2 for on, 1 for off
@@ -361,10 +362,16 @@ dLab_2005 = Lab_2005./co_obj.emp_lab_2000 ;
 
 end %Ending migration market clearing process.
 
-%Calculating the coefficient of variation of population density
-Density = (Lab_2005([1:30], 1) + Lab_2005([1:30], 2))./co_obj.landmass ;
-Coeff_density(aprod, rprod, trc, mic) = std(Density)/mean(Density) ; %Inputting coefficient into table
+%Calculating the coefficient of variation of population density)
 
+Density = (Lab_2005([1:30], 1) + Lab_2005([1:30], 2))./co_obj.landmass ;
+Coeff_density(aprod, rprod, trc, mic) = sqrt(((N-2)/2 - 1)/((N-2)/2))*std(Density, 1)/mean(Density) ; %Inputting coefficient into table. Recorrecting for Basel's correction here. 
+
+%Repeating for employment weighted variation in population density
+wmeanDensity = sum(((Lab_2005([1:30], 1) + Lab_2005([1:30], 2))/sum(Lab_2005([1:30], :), 'all')).*(Lab_2005([1:30], 1) + Lab_2005([1:30], 2))./co_obj.landmass, 'all');
+wstdDensity = sqrt(sum(((Lab_2005([1:30], 1) + Lab_2005([1:30], 2))/sum(Lab_2005([1:30], :), 'all')).*((((Lab_2005([1:30], 1) + Lab_2005([1:30], 2))./co_obj.landmass) - wmeanDensity*ones(30, 1)).^2), 'all')) ;
+
+wCoeff_density(aprod, rprod, trc, mic) = wstdDensity/wmeanDensity ;
 
 end
 end
@@ -374,3 +381,4 @@ end
 %Outputting coefficient of variation in population density statistics
 cd C:\Users\James\Dropbox\SchoolFolder\SYP\data\MyData\constructed_output
 save density_dispersion Coeff_density
+save wdensity_dispersion wCoeff_density

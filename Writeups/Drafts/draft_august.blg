@@ -5,44 +5,49 @@ Reallocating 'name_of_file' (item size: 1) to 8 items.
 The style file: chicago.bst
 Reallocating 'name_of_file' (item size: 1) to 15 items.
 Database file #1: references.bib
-You've used 5 entries,
+Warning--empty booktitle in bart2018
+Warning--empty booktitle in Fan2018HukouRI
+Warning--no number and no volume in loganetal
+Warning--page numbers missing in loganetal
+You've used 51 entries,
             2861 wiz_defined-function locations,
-            648 strings with 5657 characters,
-and the built_in function-call counts, 3472 in all, are:
-= -- 288
-> -- 269
-< -- 2
-+ -- 82
-- -- 92
-* -- 318
-:= -- 646
-add.period$ -- 15
-call.type$ -- 5
-change.case$ -- 37
-chr.to.int$ -- 5
-cite$ -- 5
-duplicate$ -- 87
-empty$ -- 196
-format.name$ -- 108
-if$ -- 639
+            920 strings with 11899 characters,
+and the built_in function-call counts, 34087 in all, are:
+= -- 2877
+> -- 2316
+< -- 7
++ -- 674
+- -- 810
+* -- 3066
+:= -- 6224
+add.period$ -- 157
+call.type$ -- 51
+change.case$ -- 356
+chr.to.int$ -- 51
+cite$ -- 55
+duplicate$ -- 927
+empty$ -- 2166
+format.name$ -- 926
+if$ -- 6334
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 3
-newline$ -- 28
-num.names$ -- 50
-pop$ -- 24
+missing$ -- 45
+newline$ -- 260
+num.names$ -- 512
+pop$ -- 227
 preamble$ -- 1
-purify$ -- 67
+purify$ -- 661
 quote$ -- 0
-skip$ -- 96
+skip$ -- 959
 stack$ -- 0
-substring$ -- 165
-swap$ -- 27
-text.length$ -- 2
+substring$ -- 1918
+swap$ -- 295
+text.length$ -- 7
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 100
-warning$ -- 0
-while$ -- 45
+type$ -- 1020
+warning$ -- 4
+while$ -- 500
 width$ -- 0
-write$ -- 69
+write$ -- 680
+(There were 4 warnings)
