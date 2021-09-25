@@ -5,7 +5,7 @@ library(ggplot2)
 library(readxl)
 library(writexl)
 library(tidyverse)
-#This file further constructs data, applying consistent normalizations to GDP and 
+#This file further constructs data, applying consistent normalization to GDP and 
 #Correcting output from rel_prod_estimate.m by the trade elasticity "theta".
 
 #Output elasticities 
@@ -64,7 +64,7 @@ master$dpindex_ag <- master$dpindex_ag^(1/theta)
 
 
 #First: choosing a new normalization
-#Instead, normalize GDP so that average value added per worker across Chinese provinces is 1 in all years (keeping a consistent unit of account)
+#Instead, normalize GDP so that average value added per worker across Chinese provinces is 1 in all years (keeping a consistent unit of account -- no "inflation" induced by artificially changing the unit of account)
 master["Va_perworker"] <- rep(NA, nrow(master))
 master$Va_perworker[master$province != "International"] <- master$nomY[master$province != "International"]/master$L[master$province != "International"]
 
@@ -83,7 +83,7 @@ master$nomY[master$sector == "ag" & master$province != "International"] <- maste
 master$nomY[master$sector == "na" & master$province == "International"] <- master$nomY[master$sector == "na" & master$province == "International"]/vashare_n
 master$nomY[master$sector == "ag" & master$province == "International"] <- master$nomY[master$sector == "ag" & master$province == "International"]/vashare_a
 
-#Calculating land allocation (in levels) assuming perfect mobility of land across sectors within provinces. 
+#Calculating land allocation (in levels) assuming perfect mobility of land across sectors (including residential) within provinces. Used to infer real GDP gaps when they include residential consumption. 
 master["agGDP_ratio"] <- rep(1, nrow(master)) 
 master$agGDP_ratio[master$sector == "ag"] <- master$nomY[master$sector == "ag"]/master$nomY[master$sector == "na"]
 master$agGDP_ratio[master$sector == "na"] <- master$nomY[master$sector == "ag"]/master$nomY[master$sector == "na"]
@@ -99,7 +99,7 @@ master$residential_land[master$sector == "ag"] <-  ((master$landmass[master$sect
 master$landmass[master$province == "International"] <- rep(NA, nrow(master[master$province %in% "International",])) 
 master$commercial_land[master$province == "International"] <- rep(NA, nrow(master[master$province %in% "International",])) 
 
-#Outputting data on land prices/use for use with other programs
+#Outputting data on land prices/use for use with other programs.
 landprice <- (land_na)*master$nomY[master$sector == "na"]/master$commercial_land[master$sector == "na"]
 landprice <- data.frame(landprice)
 landprice["ag_commercial_land"] <- master$commercial_land[master$sector == "ag"]
@@ -139,12 +139,12 @@ master$dcommercial_land[master$year == 2000] <- NA
 master$dcommercial_land[master$year == 2005] <- master$commercial_land[master$year == 2005]/master$commercial_land[master$year == 2000]
 master$dcommercial_land[master$year == 2010] <- master$commercial_land[master$year == 2010]/master$commercial_land[master$year == 2005]
 
-#Immobile land, labour, etc for international province
+#Immobile land, labour, etc for international province. Assume no capital accumulation (absorb all labour productivity growth into TFP term)
 master$dK[master$province == "International" & master$year != 2000] <- rep(1, nrow(master[master$province %in% "International" & !master$year %in% 2000, ]))
 master$dL[master$province == "International" & master$year != 2000] <- rep(1, nrow(master[master$province %in% "International" & !master$year %in% 2000, ]))
 master$dcommercial_land[master$province == "International" & master$year != 2000] <- rep(1, nrow(master[master$province %in% "International" & !master$year %in% 2000,]))
 
-#1) Solving for productivity growth from 2000-2005.
+#1) Solving for normalized productivity growth from 2000-2005.
 master["dTFP"] <- rep(NA, nrow(master))
 
 master$dTFP[master$sector == "ag"] <- (master$dnomY[master$sector == "ag"]^(vashare_a)*master$dpindex_na[master$sector == "ag"]^(phi_na)*master$dpindex_ag[master$sector == "ag"]^(phi_aa)/(master$dL[master$sector == "ag"]^(lab_ag)*master$dK[master$sector == "ag"]^(cap_ag)*master$dcommercial_land[master$sector == "ag"]^(land_ag)*master$dcost[master$sector == "ag"]))

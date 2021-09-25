@@ -1,14 +1,12 @@
 
 %Date created: May 11th 2021
-%Date edited: August 9th 2021
+%Date edited: August 21st 2021
 
 %This file estimates marginal costs using the market clearing condition,
 %assuming exogenous (calibrated) deficits. Outputs the value of these deficits and 
 %outputs value of inverse (NORMALIZED) marginal costs (to the power of the trade elasticity) to original
 %data for use with other modules in the project.
-%Also outputs (NORMALIZED) price indicies to the power of the trade elasticity 
-%Marginal costs are normalized so that chinese provinces have a geometric
-%mean of one.
+%Also outputs (NORMALIZED, up to scale factor) price indicies to the power of the trade elasticity 
 
 %Importing data on GDP by sector and province. 
 cd C:\Users\James\Dropbox\SchoolFolder\SYP\data\MyData
@@ -94,12 +92,12 @@ for i = 1:N
     
     end
     
-temp1 = repelem(ag_share(i, 2)*vashare_temp*nomGDP(i, 2)* + phi_as*nomGDP(i, 2), N/2) ;
-temp2 = repelem((1-ag_share(i, 2))*vashare_temp*nomGDP(i, 2) + phi_ns*nomGDP(i, 2), N/2) ;
+temp1 = repelem(ag_share(i, 2)*vashare_temp*nomGDP(i, 2)* + phi_as*nomGDP(i, 2), N/2) ; % Spending by i on ag
+temp2 = repelem((1-ag_share(i, 2))*vashare_temp*nomGDP(i, 2) + phi_ns*nomGDP(i, 2), N/2) ; %Spending by i in nag
 
 t_exp_matrix(i, :, 1) =  [temp1, temp2] ;
 
-temp1 = repelem(ag_share(i, 3)*vashare_temp*nomGDP(i, 3)* + phi_as*nomGDP(i, 3), N/2) ;
+temp1 = repelem(ag_share(i, 3)*vashare_temp*nomGDP(i, 3)* + phi_as*nomGDP(i, 3), N/2) ; %In 2010
 temp2 = repelem((1-ag_share(i, 3))*vashare_temp*nomGDP(i, 3) + phi_ns*nomGDP(i, 3), N/2) ;
 
 t_exp_matrix(i, :, 2) = [temp1, temp2] ;
@@ -149,7 +147,8 @@ cost_new = zeros(N, 2) ;
 while cnorm2005 > 0.001 || cnorm2010 > 0.001
 
 for i=1:N
-   %construct vector with price index info using productivity
+   %construct vector with price index info using productivity. Compute ith
+   %price index for sectors a and n. 
     for j=1:N
        if i<= N/2
         if j<= N/2
@@ -202,11 +201,7 @@ cost(:, 2) = cost_new(: , 2); %Updating
 
 end
 
-%RENORMALIZATION SO THAT COSTS ARE CONSISTENT WITH CHOICE OF NUMERAIRE
-
-
-
-%Putting into data frame and stacked data frame to save 
+%Putting into data frame and stacked data frame to save for use with other projects. 
 
 master_raw.dcost_na_2005 = cost((N/2 + 1):N, 1) ;
 master_raw.dcost_na_2010 = cost((N/2 + 1):N, 2) ;
@@ -238,8 +233,7 @@ writetable(master_raw_stacked, "constructed_output/master_stacked.xlsx")
 cd C:\Users\James\Dropbox\SchoolFolder\SYP\modules
 
 
-%% Part 3: Solving for productivity in levels in 2000 for estimation. 
-%%Normalization: spatial geometric mean of average cost will be 1
+%% Part 3: Solving for productivity in levels in 2000 for preference estimation.
 %%Absorb preference parameters (i.e. demand shifters by location-specific
 %%good) into productivity term.
 

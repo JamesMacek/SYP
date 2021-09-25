@@ -6,7 +6,7 @@
 
 
 %Date created: June 15th, 2021
-%Date modified: July 24th, 2021
+%Date modified: September 3rd, 2021
 
 
 
@@ -318,9 +318,6 @@ ExcessDemand = (MarketClear - [G_2005(:, 1)'.*Lab_2005(:, 1)' , G_2005(:, 2)'.*L
 %equilibrium
 G_2005_new = ([G_2005(:, 1)', G_2005(:, 2)']).*(ones(1, N) + (1/2)*ExcessDemand./[Lab_2005(:, 1)' , Lab_2005(:, 2)']) ;
 G_2005_new = G_2005_new/(parameters.vashare_a*sum(G_2005_new(1, [1:30]), 'all') + parameters.vashare_n*sum(G_2005_new(1, [32:61]), 'all'))*60 ;
-%Renormalizing so that average value added per worker is 1 in china
-%(consistent with normalization in 2000)
-
 
 %Calculating difference between wages and new wages deduced from
 %tattonement process. 
@@ -330,8 +327,7 @@ Gnorm_2005 = norm(G_2005_new - [G_2005(:, 1)', G_2005(:, 2)'], 1) ;
 G_2005(:, 1) = G_2005_new(1, [1:N/2])' ;
 G_2005(:, 2) = G_2005_new(1, [(N/2 + 1):N])' ;
 
-%Renormalizing so that average value added per worker is 1 in china
-%(consistent with normalization in 2000)
+%Updating dWage and aG
 dWage_2005 = G_2005./(co_obj.nomY_2000./co_obj.emp_lab_2000) ;
 aG_2005 = G_2005.*Lab_2005 ;
 
@@ -365,7 +361,7 @@ end %Ending migration market clearing process.
 %Calculating the coefficient of variation of population density)
 
 Density = (Lab_2005([1:30], 1) + Lab_2005([1:30], 2))./co_obj.landmass ;
-Coeff_density(aprod, rprod, trc, mic) = sqrt(((N-2)/2 - 1)/((N-2)/2))*std(Density, 1)/mean(Density) ; %Inputting coefficient into table. Recorrecting for Basel's correction here. 
+Coeff_density(aprod, rprod, trc, mic) = sqrt(((N-2)/2 - 1)/((N-2)/2))*std(Density)/mean(Density) ; %Inputting coefficient into table. Recorrecting for Basel's correction here. 
 
 %Repeating for employment weighted variation in population density
 wmeanDensity = sum(((Lab_2005([1:30], 1) + Lab_2005([1:30], 2))/sum(Lab_2005([1:30], :), 'all')).*(Lab_2005([1:30], 1) + Lab_2005([1:30], 2))./co_obj.landmass, 'all');
@@ -379,6 +375,30 @@ end
 end
 
 %Outputting coefficient of variation in population density statistics
+
+
+%%
+%Calculation of average marginal effects + saving
+effect_prod = zeros(1, 4) ;
+
+effect_prod(1) = mean(Coeff_density(2, :, :, :) - Coeff_density(1, :, :, :), 'all')/(Coeff_density(2, 2, 2, 2) - Coeff_density(1, 1, 1, 1)) ; 
+effect_prod(2) = mean(Coeff_density(:, 2, :, :) - Coeff_density(:, 1, :, :), 'all')/(Coeff_density(2, 2, 2, 2) - Coeff_density(1, 1, 1, 1)) ;
+effect_prod(3) = mean(Coeff_density(:, :, 2, :) - Coeff_density(:, :, 1, :), 'all')/(Coeff_density(2, 2, 2, 2) - Coeff_density(1, 1, 1, 1)) ; 
+effect_prod(4) = mean(Coeff_density(:, :, :, 2) - Coeff_density(:, :, :, 1), 'all')/(Coeff_density(2, 2, 2, 2) - Coeff_density(1, 1, 1, 1)) ;
+
+effect_prod = 100*effect_prod ; %percentage terms ;
+
+xbar = categorical({'Uniform growth', 'Relative growth', 'Trade costs', 'Migration costs'}) ;
+xbar = reordercats(xbar, {'Uniform growth', 'Relative growth', 'Trade costs', 'Migration costs'}) ;
+
+b = bar(xbar, effect_prod) ;
+ylabel('Contribution (Shapely Value), percent') ;
+
+cd C:\Users\James\Dropbox\SchoolFolder\SYP\Writeups\Drafts
+saveas(gcf, 'ShapelyDecomp.png') 
+
+%Plotting bar graph
+
 cd C:\Users\James\Dropbox\SchoolFolder\SYP\data\MyData\constructed_output
 save density_dispersion Coeff_density
 save wdensity_dispersion wCoeff_density

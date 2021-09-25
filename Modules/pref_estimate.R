@@ -29,7 +29,7 @@ theta = 4 #Simonovska and Waugh (20xx)
 
 #Estimates epsilon_a and eta as per the paper.
 #Date created: May 28th, 2021
-#Date edited: August 10th, 2021
+#Date edited: September 7th, 2021
 
 loadBootstrap = 1 #Set to 0 if you want to run bootstrap command. 
 
@@ -243,11 +243,12 @@ print(estimate_nls_bootstrap)
 master["log_Model_consumption_index_nls"] <- master$log_EPa + (1/(1-estimate_nls$par[2]))*master$log_naspend
 check_reg2 <- lm_robust(log_Model_consumption_index_nls~log_rY, data = master)
 
+setwd("C:/Users/James/Dropbox/SchoolFolder/SYP/Writeups/Drafts")
 #Exporting with GGplot
-ggplot(master, aes(x=log_rY, y=log_Model_consumption_index_nls)) + geom_point()  + 
+ggplot(master, aes(x=log_rY, y=log_Model_consumption_index_nls)) + geom_point(aes(colour=sector))  + 
   geom_smooth(method="lm") + labs(x="Log(Real GDP per capita)", y="Log(Model Implied Utility Index)")
 ggsave("model_implied_index.png")
-
+setwd("C:/Users/James/Dropbox/SchoolFolder/SYP/data/MyData")
 #___________________________________________________________________________________________________________________
 #PART 3: Estimating productivity growth assuming change in relative prices from Groningen 10 sector database
 load("constructed_output/d_g10s_constructed.Rda")
@@ -294,8 +295,8 @@ rel_priceag_2010_corrected <- rel_priceag_2010/mean(master$drelprice[master$year
 master$drelprice[master$year == 2010] <- rel_priceag_2010*master$drelprice[master$year == 2010]/mean(master$drelprice[master$year == 2010])
 
 
-#Choosing G_n to match the population-weighted average fall in relative agricultural spending in the data. from 2000-2005 and 2005-2010.
-#NOTE: I'm using model implied index above, which is partially calibrated to future ag consumption shares. As such, the indirect utility function will not be satisfied exactly!
+#Choosing G_n to match the average fall in relative agricultural spending in the data over provinces from 2000-2005 and 2005-2010.
+#NOTE: I'm using model implied index above, which is partially calibrated to ag-consumption shares. As such, the indirect utility function will not be satisfied exactly!
 #This is because the model is over-identified.
 
 #NOTE: estimates of Gn will depend on which estimates of eta and epsilon are chosen!
@@ -333,6 +334,11 @@ na_ipgrowth_2005_unc <- exp((1/((1-estimate_unc$par[2])*(estimate_unc$par[1] - 1
 na_ipgrowth_2010_unc <- exp((1/((1-estimate_unc$par[2])*(estimate_unc$par[1] - 1)))*mean(master$relspend_error_Gn_unc[master$year == 2010]))
 
 #Value of average productivity growth? Ex: Na costs are scaled down by factor 1/na_ipgrowth_2010. This means that productivity is scaled by (na_ipgrowth)(1/(1 + va_share_n))
+
+#How much was the average fall in prices in each sector for NLS estimates in 2005? 
+nls_pfall_na_2005 = (na_ipgrowth_2005)/mean(master$dpindex_na[master$year == 2005]) 
+nls_pfall_ag_2005 = (na_ipgrowth_2005*rel_priceag_2005_corrected)/mean(master$dpindex_ag[master$year==2005])
+
 
 #Creating and exporting dataframe
 export <- data.frame(c(theta), c(estimate_nls$par[1]), c(estimate_nls$par[2]), c(1/na_ipgrowth_2005), c(1/na_ipgrowth_2010), c(rel_priceag_2005_corrected), c(rel_priceag_2010_corrected), c(estimate_unc$par[1]), c(estimate_unc$par[2]), c(1/na_ipgrowth_2005_unc), c(1/na_ipgrowth_2010_unc))

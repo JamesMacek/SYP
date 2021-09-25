@@ -9,45 +9,46 @@ Warning--empty booktitle in bart2018
 Warning--empty booktitle in Fan2018HukouRI
 Warning--no number and no volume in loganetal
 Warning--page numbers missing in loganetal
-You've used 51 entries,
+Warning--can't use both author and editor fields in 10sector
+You've used 62 entries,
             2861 wiz_defined-function locations,
-            920 strings with 11899 characters,
-and the built_in function-call counts, 34087 in all, are:
-= -- 2877
-> -- 2316
-< -- 7
-+ -- 674
-- -- 810
-* -- 3066
-:= -- 6224
-add.period$ -- 157
-call.type$ -- 51
-change.case$ -- 356
-chr.to.int$ -- 51
-cite$ -- 55
-duplicate$ -- 927
-empty$ -- 2166
-format.name$ -- 926
-if$ -- 6334
+            978 strings with 13348 characters,
+and the built_in function-call counts, 42173 in all, are:
+= -- 3563
+> -- 2892
+< -- 10
++ -- 849
+- -- 1003
+* -- 3829
+:= -- 7656
+add.period$ -- 192
+call.type$ -- 62
+change.case$ -- 435
+chr.to.int$ -- 62
+cite$ -- 67
+duplicate$ -- 1147
+empty$ -- 2666
+format.name$ -- 1155
+if$ -- 7873
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 45
-newline$ -- 260
-num.names$ -- 512
-pop$ -- 227
+missing$ -- 57
+newline$ -- 315
+num.names$ -- 624
+pop$ -- 283
 preamble$ -- 1
-purify$ -- 661
+purify$ -- 807
 quote$ -- 0
-skip$ -- 959
+skip$ -- 1185
 stack$ -- 0
-substring$ -- 1918
-swap$ -- 295
-text.length$ -- 7
+substring$ -- 2381
+swap$ -- 378
+text.length$ -- 10
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 1020
-warning$ -- 4
-while$ -- 500
+type$ -- 1230
+warning$ -- 5
+while$ -- 607
 width$ -- 0
-write$ -- 680
-(There were 4 warnings)
+write$ -- 828
+(There were 5 warnings)

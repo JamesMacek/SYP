@@ -7,11 +7,23 @@ Allen, T. and C.~Arkolakis (2014, 05).
 \newblock {\em The Quarterly Journal of Economics\/}~{\em 129\/}(3),
   1085--1140.
 
+\bibitem[\protect\citeauthoryear{Allen, Arkolakis, and Takahashi}{Allen
+  et~al.}{2020}]{universalgrav}
+Allen, T., C.~Arkolakis, and Y.~Takahashi (2020).
+\newblock Universal gravity.
+\newblock {\em Journal of Political Economy\/}~{\em 128\/}(2), 393--433.
+
 \bibitem[\protect\citeauthoryear{Allen and Donaldson}{Allen and
   Donaldson}{2020}]{pathdep}
 Allen, T. and D.~Donaldson (2020, November).
 \newblock Persistence and path dependence in the spatial economy.
 \newblock Working Paper 28059, National Bureau of Economic Research.
+
+\bibitem[\protect\citeauthoryear{Balassa}{Balassa}{1963}]{balassa}
+Balassa, B. (1963).
+\newblock An empirical demonstration of classical comparative cost theory.
+\newblock {\em The Review of Economics and Statistics\/}~{\em 45\/}(3),
+  231--238.
 
 \bibitem[\protect\citeauthoryear{Bartelme}{Bartelme}{2018}]{bart2018}
 Bartelme, D. (2018).
@@ -45,6 +57,12 @@ Baum-Snow, N., J.~V. Henderson, M.~A. Turner, Q.~Zhang, and L.~Brandt (2020).
 \newblock {\em Journal of Urban Economics\/}~{\em 115}, 103124.
 \newblock Cities in China.
 
+\bibitem[\protect\citeauthoryear{Berry, Gandhi, and Haile}{Berry
+  et~al.}{2013}]{connectedsubstitutes}
+Berry, S., A.~Gandhi, and P.~Haile (2013).
+\newblock Connected substitutes and invertibility of demand.
+\newblock {\em Econometrica\/}~{\em 81\/}(5), 2087--2111.
+
 \bibitem[\protect\citeauthoryear{Boppart}{Boppart}{2014}]{boppart2014}
 Boppart, T. (2014, 11).
 \newblock Structural change and the kaldor facts in a growth model with
@@ -64,6 +82,12 @@ Bustos, P., G.~Garber, and J.~Ponticelli (2020, 01).
 \newblock {Capital Accumulation and Structural Transformation*}.
 \newblock {\em The Quarterly Journal of Economics\/}~{\em 135\/}(2),
   1037--1094.
+
+\bibitem[\protect\citeauthoryear{Caliendo and Parro}{Caliendo and
+  Parro}{2014}]{caliendoparro}
+Caliendo, L. and F.~Parro (2014, 11).
+\newblock {Estimates of the Trade and Welfare Effects of NAFTA}.
+\newblock {\em The Review of Economic Studies\/}~{\em 82\/}(1), 1--44.
 
 \bibitem[\protect\citeauthoryear{Caselli and Coleman~II}{Caselli and
   Coleman~II}{2001}]{casellicoleman}
@@ -93,6 +117,14 @@ Coşar, A.~K. and P.~D. Fajgelbaum (2016, February).
 \newblock {\em American Economic Journal: Microeconomics\/}~{\em 8\/}(1),
   24--56.
 
+\bibitem[\protect\citeauthoryear{Combes and Gobillon}{Combes and
+  Gobillon}{2015}]{combesg2015}
+Combes, P.-P. and L.~Gobillon (2015).
+\newblock Chapter 5 - the empirics of agglomeration economies.
+\newblock In G.~Duranton, J.~V. Henderson, and W.~C. Strange (Eds.), {\em
+  Handbook of Regional and Urban Economics}, Volume~5 of {\em Handbook of
+  Regional and Urban Economics}, pp.\  247--348. Elsevier.
+
 \bibitem[\protect\citeauthoryear{Comin, Lashkari, and Mestieri}{Comin
   et~al.}{2021}]{cominetal2021}
 Comin, D., D.~Lashkari, and M.~Mestieri (2021, 01).
@@ -110,6 +142,12 @@ Cravino, J. and S.~Sotelo (2019, 07).
 Davis, D.~R. (1998).
 \newblock The home market, trade, and industrial structure.
 \newblock {\em The American Economic Review\/}~{\em 88\/}(5), 1264--1276.
+
+\bibitem[\protect\citeauthoryear{Dekle, Eaton, and Kortum}{Dekle
+  et~al.}{2007}]{dekle}
+Dekle, R., J.~Eaton, and S.~Kortum (2007, May).
+\newblock Unbalanced trade.
+\newblock {\em American Economic Review\/}~{\em 97\/}(2), 351--355.
 
 \bibitem[\protect\citeauthoryear{Delventhal}{Delventhal}{2019}]{delventhalglobenet}
 Delventhal, M. (2019).
@@ -293,6 +331,26 @@ Redding, S. (2016).
 \newblock Goods trade, factor mobility and welfare.
 \newblock {\em Journal of International Economics\/}~{\em 101\/}(C), 148--167.
 
+\bibitem[\protect\citeauthoryear{Restuccia, Yang, and Zhu}{Restuccia
+  et~al.}{2008}]{restyangzhu}
+Restuccia, D., D.~T. Yang, and X.~Zhu (2008).
+\newblock Agriculture and aggregate productivity: A quantitative cross-country
+  analysis.
+\newblock {\em Journal of Monetary Economics\/}~{\em 55\/}(2), 234--250.
+
+\bibitem[\protect\citeauthoryear{Samuelson and Swamy}{Samuelson and
+  Swamy}{1974}]{samswamy}
+Samuelson, P.~A. and S.~Swamy (1974).
+\newblock Invariant economic index numbers and canonical duality: Survey and
+  synthesis.
+\newblock {\em The American Economic Review\/}~{\em 64\/}(4), 566--593.
+
+\bibitem[\protect\citeauthoryear{Simonovska and Waugh}{Simonovska and
+  Waugh}{2014}]{sw2014}
+Simonovska, I. and M.~E. Waugh (2014).
+\newblock The elasticity of trade: Estimates and evidence.
+\newblock {\em Journal of International Economics\/}~{\em 92\/}(1), 34--50.
+
 \bibitem[\protect\citeauthoryear{Sotelo}{Sotelo}{2020}]{sotello2020}
 Sotelo, S. (2020).
 \newblock Domestic trade frictions and agriculture.
@@ -302,6 +360,20 @@ Sotelo, S. (2020).
 Swiecki, T. (2017, March).
 \newblock {Determinants of Structural Change}.
 \newblock {\em Review of Economic Dynamics\/}~{\em 24}, 95--131.
+
+\bibitem[\protect\citeauthoryear{Timmer, {de Vries}, and {de Vries}}{Timmer
+  et~al.}{2015}]{10sector}
+Timmer, M., G.~{de Vries}, and K.~{de Vries} (2015).
+\newblock {\em Patterns of structural Change in Developing Countries}, pp.\
+  65--83.
+\newblock Routledge Handbooks. Routledge.
+
+\bibitem[\protect\citeauthoryear{Tombe}{Tombe}{2015}]{tombe2015}
+Tombe, T. (2015, July).
+\newblock The missing food problem: Trade, agriculture, and international
+  productivity differences.
+\newblock {\em American Economic Journal: Macroeconomics\/}~{\em 7\/}(3),
+  226--58.
 
 \bibitem[\protect\citeauthoryear{Tombe and Zhu}{Tombe and Zhu}{2019}]{tombezhu}
 Tombe, T. and X.~Zhu (2019, 05).
