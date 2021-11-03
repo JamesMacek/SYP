@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.12) (preloaded format=pdflatex 2021.1.21)  24 SEP 2021 17:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.12) (preloaded format=pdflatex 2021.1.21)  6 OCT 2021 18:05
 entering extended mode
 **./draft_august.tex
 (draft_august.tex
@@ -556,11 +556,11 @@ File: fig1.png Graphic file (type png)
 Package pdftex.def Info: fig1.png  used on input line 568.
 (pdftex.def)             Requested size: 345.0pt x 224.20656pt.
  [38 <./fig1.png (PNG copy)>]
-<model_implied_index.png, id=712, 554.7927pt x 217.5327pt>
+<model_implied_index.png, id=712, 473.3685pt x 277.7577pt>
 File: model_implied_index.png Graphic file (type png)
 <use model_implied_index.png>
 Package pdftex.def Info: model_implied_index.png  used on input line 574.
-(pdftex.def)             Requested size: 345.0pt x 135.27382pt.
+(pdftex.def)             Requested size: 345.0pt x 202.44356pt.
  [39 <./model_implied_index.png>]
 [40]
 Overfull \hbox (8.13419pt too wide) detected at line 634
@@ -600,7 +600,7 @@ Overfull \hbox (17.33911pt too wide) in paragraph at lines 685--687
 
 [44] (draft_august.aux)
 Package rerunfilecheck Info: File `draft_august.out' has not changed.
-(rerunfilecheck)             Checksum: 2CA1752232B4D0123DCBEC0727004430;569.
+(rerunfilecheck)             Checksum: DEE346F8066ABC4DCEFFD57370984AB1;585.
 
 
 LaTeX Font Warning: Size substitutions with differences
@@ -610,7 +610,7 @@ LaTeX Font Warning: Size substitutions with differences
 Here is how much of TeX's memory you used:
  8794 strings out of 479697
  136822 string characters out of 2867133
- 437902 words of memory out of 3000000
+ 437918 words of memory out of 3000000
  25520 multiletter control sequences out of 15000+200000
  429337 words of font info for 101 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -646,7 +646,7 @@ type1/public/amsfonts/symbols/msbm10.pfb><C:/Users/James/AppData/Local/Programs
 /MiKTeX/fonts/type1/urw/palatino/uplb8a.pfb><C:/Users/James/AppData/Local/Progr
 ams/MiKTeX/fonts/type1/urw/palatino/uplr8a.pfb><C:/Users/James/AppData/Local/Pr
 ograms/MiKTeX/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on draft_august.pdf (44 pages, 1056283 bytes).
+Output written on draft_august.pdf (44 pages, 1057798 bytes).
 PDF statistics:
  905 PDF objects out of 1000 (max. 8388607)
  200 named destinations out of 1000 (max. 500000)
