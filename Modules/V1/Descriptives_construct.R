@@ -7,8 +7,8 @@ library(simpleboot)
 library(Hmisc)
 
 
-#Date created: October 8th, 2021
-#Date modified: October 8th, 2021
+#Date created: March 22nd, 2021
+#Date modified: October 4th, 2021
 
 N=30 #No. provinces.
 ################PART 1######################################
@@ -31,8 +31,6 @@ setwd("C:/Users/James/Dropbox/SchoolFolder/SYP/Writeups/Drafts")
 #Getting all the vars together 
 data2plot["Ag Home Share"] <- ag_home 
 data2plot["Non-Ag Home Share"] <- na_home
-data2plot["La1985"] <- emp_GDP_data$L_ag_1985
-data2plot["Ln1985"] <- emp_GDP_data$L_na_1985
 data2plot["La2000"] <- emp_GDP_data$L_ag_2000
 data2plot["Ln2000"] <- emp_GDP_data$L_na_2000
 data2plot["La2005"] <- emp_GDP_data$L_ag_2005
@@ -45,10 +43,8 @@ data2plot["Landmass"] <- (1/1000)*as.matrix(emp_GDP_data["landmass"])
 data2plot["Ag_Share_2000"] <- as.matrix(data2plot["La2000"])/(as.matrix(data2plot["La2000"]) + as.matrix(data2plot["Ln2000"]))
 data2plot["Ag_Na_Rel_spend"] <- as.matrix(data2plot["Ag Home Share"])/(as.matrix(data2plot["Non-Ag Home Share"]))
 data2plot["Emp_density_2000"] <- (data2plot$La2000 + data2plot$Ln2000)/(as.matrix(data2plot["Landmass"]))
-data2plot["Emp_density_1985"] <- (data2plot$La1985 + data2plot$Ln1985)/data2plot$Landmass
 data2plot["Emp_density_2005"] <- (data2plot$La2005 + data2plot$Ln2005)/data2plot$Landmass
 data2plot["Emp_density_2010"] <- (data2plot$La2010 + data2plot$Ln2010)/data2plot$Landmass
-data2plot["Emp_1985"] <- data2plot$La1985 + data2plot$Ln1985
 data2plot["Emp_2000"] <- data2plot$La2000 + data2plot$Ln2000
 data2plot["Emp_2005"] <- data2plot$La2005 + data2plot$Ln2005
 data2plot["Emp_2010"] <- data2plot$La2010 + data2plot$Ln2010
@@ -181,7 +177,6 @@ dRCAreg <- lm_robust(dLog_RCA ~ Emp_density_2000, weights = Emp_2000, data=data2
 
 ##Checking data implied structural change
 data2plot_noint <- data2plot[!row.names(data2plot) %in% "International",]
-Aggregate_Ag_share_1985 <-  colSums(as.matrix(data2plot_noint$La1985))/(colSums(as.matrix(data2plot_noint$La1985)) + colSums(as.matrix(data2plot_noint$Ln1985)))
 Aggregate_Ag_Share_2000 <- colSums(as.matrix(data2plot_noint$La2000))/(colSums(as.matrix(data2plot_noint$La2000)) + colSums(as.matrix(data2plot_noint$Ln2000)))
 Aggregate_Ag_Share_2005 <- colSums(as.matrix(data2plot_noint$La2005))/(colSums(as.matrix(data2plot_noint$La2005)) + colSums(as.matrix(data2plot_noint$Ln2005))) #Fell 8%
 Aggregate_Ag_Share_2010 <- colSums(as.matrix(data2plot_noint$La2010))/(colSums(as.matrix(data2plot_noint$La2010)) + colSums(as.matrix(data2plot_noint$Ln2010))) #Fell 8%
@@ -191,7 +186,6 @@ Aggregate_Ag_Share_2010 <- colSums(as.matrix(data2plot_noint$La2010))/(colSums(a
 data2plot_noint <- data2plot[!row.names(data2plot) %in% "International",]
 
 #Unweighted density dispersion
-dens_disp_1985 <- sqrt((N-1)/N)*sd(data2plot_noint$Emp_density_1985)/mean(data2plot_noint$Emp_density_1985)
 dens_disp_2000 <- sqrt((N-1)/N)*sd(data2plot_noint$Emp_density_2000)/mean(data2plot_noint$Emp_density_2000)
 dens_disp_2005 <- sqrt((N-1)/N)*sd(data2plot_noint$Emp_density_2005)/mean(data2plot_noint$Emp_density_2005)
 dens_disp_2010 <- sqrt((N-1)/N)*sd(data2plot_noint$Emp_density_2010)/mean(data2plot_noint$Emp_density_2010)
@@ -218,10 +212,8 @@ avgspend_2005 <- sum(emp_GDP_data_noint$nomY_ag_2005)/(sum(emp_GDP_data_noint$no
 avgspend_2010 <- sum(emp_GDP_data_noint$nomY_ag_2010)/(sum(emp_GDP_data_noint$nomY_ag_2010) + sum(emp_GDP_data_noint$nomY_na_2010))*wtd.mean(emp_GDP_data_noint$agspend_ag_2010, weights = emp_GDP_data_noint$nomY_ag_2010) + 
                  sum(emp_GDP_data_noint$nomY_na_2010)/(sum(emp_GDP_data_noint$nomY_ag_2010) + sum(emp_GDP_data_noint$nomY_na_2010))*wtd.mean(emp_GDP_data_noint$agspend_na_2010, weights = emp_GDP_data_noint$nomY_na_2010)
 
-#Employment Weighted geometric average fall. Very similar to fall in aggregate spending shares (and much easier to implement for calibration)
+#Fell 3 percent per year approximately (average across provinces) 31 - 25% over 10 year period.
 
-avgspend_2000_w = exp(sum(emp_GDP_data_noint$nomY_ag_2000)/(sum(emp_GDP_data_noint$nomY_ag_2000) + sum(emp_GDP_data_noint$nomY_na_2000))*wtd.mean(log(emp_GDP_data_noint$agspend_ag_2000), weights = emp_GDP_data_noint$nomY_ag_2000) + sum(emp_GDP_data_noint$nomY_na_2000)/(sum(emp_GDP_data_noint$nomY_ag_2000) + sum(emp_GDP_data_noint$nomY_na_2000))*wtd.mean(log(emp_GDP_data_noint$agspend_na_2000), weights = emp_GDP_data_noint$nomY_na_2000))
-avgspend_2005_w = exp(sum(emp_GDP_data_noint$nomY_ag_2000)/(sum(emp_GDP_data_noint$nomY_ag_2000) + sum(emp_GDP_data_noint$nomY_na_2000))*wtd.mean(log(emp_GDP_data_noint$agspend_ag_2005), weights = emp_GDP_data_noint$nomY_ag_2000) + sum(emp_GDP_data_noint$nomY_na_2000)/(sum(emp_GDP_data_noint$nomY_ag_2000) + sum(emp_GDP_data_noint$nomY_na_2000))*wtd.mean(log(emp_GDP_data_noint$agspend_na_2005), weights = emp_GDP_data_noint$nomY_na_2000))
 
 #Eckert and Peters (2018) decomposition from 2005-2000
 dStructChange <- Aggregate_Ag_Share_2000 - Aggregate_Ag_Share_2005  #Approx 8 percent.
@@ -231,4 +223,7 @@ dSpatReallocation <- t(as.matrix(data2plot_noint$Ag_Share_2000))%*%as.matrix(dat
 #Share:
 EckertPetersShare <- dSpatReallocation/dStructChange
 
+################ Oct 4th How much observed pop density dispersion migration is driven by implied hukou registrants vs migrants?
+#Create another decomposition
+#Importing migration flow data
 

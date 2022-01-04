@@ -1,0 +1,54 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: draft_december_final.aux
+Reallocating 'name_of_file' (item size: 1) to 8 items.
+The style file: chicago.bst
+Reallocating 'name_of_file' (item size: 1) to 15 items.
+Database file #1: references.bib
+Warning--empty booktitle in bart2018
+Warning--empty booktitle in Fan2018HukouRI
+Warning--no number and no volume in loganetal
+Warning--page numbers missing in loganetal
+Warning--can't use both author and editor fields in 10sector
+You've used 66 entries,
+            2861 wiz_defined-function locations,
+            997 strings with 13830 characters,
+and the built_in function-call counts, 44958 in all, are:
+= -- 3794
+> -- 3092
+< -- 10
++ -- 911
+- -- 1069
+* -- 4099
+:= -- 8156
+add.period$ -- 204
+call.type$ -- 66
+change.case$ -- 464
+chr.to.int$ -- 66
+cite$ -- 71
+duplicate$ -- 1218
+empty$ -- 2839
+format.name$ -- 1233
+if$ -- 8394
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 61
+newline$ -- 335
+num.names$ -- 664
+pop$ -- 300
+preamble$ -- 1
+purify$ -- 860
+quote$ -- 0
+skip$ -- 1258
+stack$ -- 0
+substring$ -- 2543
+swap$ -- 401
+text.length$ -- 10
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 1310
+warning$ -- 5
+while$ -- 643
+width$ -- 0
+write$ -- 880
+(There were 5 warnings)

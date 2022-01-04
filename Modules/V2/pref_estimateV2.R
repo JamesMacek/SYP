@@ -11,6 +11,7 @@ library(NlcOptim)
 library(pracma)
 library(matrixcalc)
 library(janitor)
+library(R.matlab)
 
 
 #Estimates epsilon_a and eta as per the paper. Uses output from cost_calibrateV2.m to do this. 
@@ -18,18 +19,31 @@ library(janitor)
 #are invariant to a uniform scaling of the data.
 
 #Date created: October 13th, 2021
-#Date edited: October 13th, 2021
+#Date edited: December 30th, 2021
 
 loadBootstrap = 1 #Set to 0 if you want to run bootstrap command. 
 loadSensitivity = 1 #Set to 0 to run sensitivity analyses.
 
 setwd("C:/Users/James/Dropbox/SchoolFolder/SYP/data/MyData")
 
+#Reading parameters from master file, putting into data frame
+parameters <- readMat('constructed_outputV2/parameters.mat')
+parameters <- parameters$parameters
+parameters_rownames = rownames(parameters)
+parameters <- unlist(parameters)
+parameters <- data.frame(parameters, row.names = parameters_rownames)
+
+pointest = parameters["pointest.eta.epsilon", "parameters"] #If not using estimated epsilon + eta == 0
+no_pointest_eta = parameters["eta", "parameters"]
+no_pointest_epsilon = parameters["epsilon", "parameters"]
+
 #Main output to use
 master <- read_excel("constructed_outputV2/master_stacked2.xlsx")
+master_unstacked <- read_excel("constructed_outputV2/master2.xlsx")
 
 #Removing international observation-- expenditure not well measured in this case.
 master <- master[!master$province %in% "International",]
+master_unstacked <- master_unstacked[!master_unstacked$province %in% "International",]
 
 #Creating data frame vars for estimation. 
 #Choosing non-agriculture as a base sector####. 
@@ -47,6 +61,15 @@ master["log_EPa"] <- log(master$Va_perworker) - log(master$pindex_na)
 master["FE_2005"] <- ifelse(master$year == 2005, 1, 0)
 master["FE_2010"] <- ifelse(master$year == 2010, 1, 0)
 master["FE_ag"] <- ifelse(master$sector == "ag", 1, 0)
+master["VA"] <- master$Va_perworker*master$L
+
+#
+master_unstacked["log_agspend_ag_1985"] <- log(master_unstacked$agspend_ag_1985)
+master_unstacked["log_agspend_na_1985"] <- log(master_unstacked$agspend_na_1985)
+master_unstacked["log_naspend_ag_1985"] <- log(rep(1, nrow(master_unstacked)) - master_unstacked$agspend_ag_1985)
+master_unstacked["log_naspend_na_1985"] <- log(rep(1, nrow(master_unstacked)) - master_unstacked$agspend_na_1985)
+
+
 
 #______REGRESSIONS_____#
 #With income per capita omitted.
@@ -283,41 +306,63 @@ drel_priceag_2010 <- unname(drel_priceag_2010) #rel price of ag increased by 19%
 #Choosing G_n and  to match the average fall in relative agricultural spending in the data over provinces from 2000-2005 and 2005-2010.
 #NOTE: estimates of Gn will depend on which estimates of eta and epsilon are chosen!
 
-#Solving for G_a/G_n (exp of discrepancy between log drelprice in Groningen 10 sector and average difference in log price index)
-relGa_2005 <-  1/(exp(log(drel_priceag_2005) - mean(log(master$dpindex_ag[master$year==2005]) - log(master$dpindex_na[master$year==2005])))) #Barely any change in 2000!
-relGa_2010 <- 1/(exp(log(drel_priceag_2010) - mean(log(master$dpindex_ag[master$year==2010]) - log(master$dpindex_na[master$year==2010]))))
+#Solving for G_a/G_n (exp of discrepancy between log drelprice in Groningen 10 sector and geometric average difference in log price index). 
+relGa_2005 <-  1/(exp(log(drel_priceag_2005) - weighted.mean(log(master$dpindex_ag[master$year==2005]) - log(master$dpindex_na[master$year==2005]), master$VA[master$year==2000]))) 
+relGa_2010 <- 1/(exp(log(drel_priceag_2010) - weighted.mean(log(master$dpindex_ag[master$year==2010]) - log(master$dpindex_na[master$year==2010], master$VA[master$year==2005]))))
 
 #Gn using NLS estimates. Make sense! 
-Gn_2005_nls = 1/(exp((mean(master$log_agspend[master$year == 2005] - master$log_agspend[master$year == 2000]) - estimate_nls$par[1]*mean((master$log_naspend[master$year == 2005] - master$log_naspend[master$year == 2000])) -
+Gn_2005_nls = 1/(exp((weighted.mean(master$log_agspend[master$year == 2005] - master$log_agspend[master$year == 2000], master$VA[master$year==2000]) - estimate_nls$par[1]*weighted.mean(master$log_naspend[master$year == 2005] - master$log_naspend[master$year == 2000], master$VA[master$year==2000]) -
                         (1-estimate_nls$par[2])*log(drel_priceag_2005) -
-                        (1-estimate_nls$par[2])*(estimate_nls$par[1] - 1)*mean(master$log_EPa[master$year==2005] - master$log_EPa[master$year==2000]))/((1-estimate_nls$par[2])*(1 - estimate_nls$par[1]))))
+                        (1-estimate_nls$par[2])*(estimate_nls$par[1] - 1)*weighted.mean(master$log_EPa[master$year==2005] - master$log_EPa[master$year==2000], master$VA[master$year==2000]))/((1-estimate_nls$par[2])*(1 - estimate_nls$par[1]))))
 
-Gn_2010_nls = 1/(exp((mean(master$log_agspend[master$year == 2010] - master$log_agspend[master$year == 2005]) - estimate_nls$par[1]*mean((master$log_naspend[master$year == 2010] - master$log_naspend[master$year == 2005])) -
+Gn_2010_nls = 1/(exp((weighted.mean(master$log_agspend[master$year == 2010] - master$log_agspend[master$year == 2005], master$VA[master$year==2005]) - estimate_nls$par[1]*weighted.mean(master$log_naspend[master$year == 2010] - master$log_naspend[master$year == 2005], master$VA[master$year==2005]) -
                         (1-estimate_nls$par[2])*log(drel_priceag_2010) -
-                        (1-estimate_nls$par[2])*(estimate_nls$par[1] - 1)*mean(master$log_EPa[master$year==2010] - master$log_EPa[master$year==2005]))/((1-estimate_nls$par[2])*(1 - estimate_nls$par[1]))))
+                        (1-estimate_nls$par[2])*(estimate_nls$par[1] - 1)*weighted.mean(master$log_EPa[master$year==2010] - master$log_EPa[master$year==2005], master$VA[master$year==2005]))/((1-estimate_nls$par[2])*(1 - estimate_nls$par[1]))))
 
 
 
 #Gn using unconstrained estimates. Absolute nonsense results! Elasticity of substitution insanely high. 
-Gn_2005_unc = 1/(exp((mean(master$log_agspend[master$year == 2005] - master$log_agspend[master$year == 2000]) - estimate_unc$par[1]*mean((master$log_naspend[master$year == 2005] - master$log_naspend[master$year == 2000])) -
+Gn_2005_unc = 1/(exp((weighted.mean(master$log_agspend[master$year == 2005] - master$log_agspend[master$year == 2000], master$VA[master$year==2000]) - estimate_unc$par[1]*weighted.mean(master$log_naspend[master$year == 2005] - master$log_naspend[master$year == 2000], master$VA[master$year==2000]) -
                         (1-estimate_unc$par[2])*log(drel_priceag_2005) -
-                        (1-estimate_unc$par[2])*(estimate_unc$par[1] - 1)*mean(master$log_EPa[master$year==2005] - master$log_EPa[master$year==2000]))/((1-estimate_unc$par[2])*(1 - estimate_unc$par[1]))))
+                        (1-estimate_unc$par[2])*(estimate_unc$par[1] - 1)*weighted.mean(master$log_EPa[master$year==2005] - master$log_EPa[master$year==2000], master$VA[master$year==2000]))/((1-estimate_unc$par[2])*(1 - estimate_unc$par[1]))))
 
-Gn_2010_unc = 1/(exp((mean(master$log_agspend[master$year == 2010] - master$log_agspend[master$year == 2005]) - estimate_unc$par[1]*mean((master$log_naspend[master$year == 2010] - master$log_naspend[master$year == 2005])) -
+Gn_2010_unc = 1/(exp((weighted.mean(master$log_agspend[master$year == 2010] - master$log_agspend[master$year == 2005], master$VA[master$year==2000]) - estimate_unc$par[1]*weighted.mean(master$log_naspend[master$year == 2010] - master$log_naspend[master$year == 2005], master$VA[master$year==2000]) -
                         (1-estimate_unc$par[2])*log(drel_priceag_2010) -
-                        (1-estimate_unc$par[2])*(estimate_unc$par[1] - 1)*mean(master$log_EPa[master$year==2010] - master$log_EPa[master$year==2005]))/((1-estimate_unc$par[2])*(1 - estimate_unc$par[1]))))
+                        (1-estimate_unc$par[2])*(estimate_unc$par[1] - 1)*weighted.mean(master$log_EPa[master$year==2010] - master$log_EPa[master$year==2005], master$VA[master$year==2000]))/((1-estimate_unc$par[2])*(1 - estimate_unc$par[1]))))
+
+#Using pre-specified if pointest_eta_epsilon==0
+if (pointest == 0) {
+
+  Gn_2005_nls = 1/(exp((weighted.mean(master$log_agspend[master$year == 2005] - master$log_agspend[master$year == 2000], master$VA[master$year==2000]) - no_pointest_epsilon*weighted.mean(master$log_naspend[master$year == 2005] - master$log_naspend[master$year == 2000], master$VA[master$year==2000]) -
+                          (1-no_pointest_eta)*log(drel_priceag_2005) -
+                          (1-no_pointest_eta)*(no_pointest_epsilon - 1)*weighted.mean(master$log_EPa[master$year==2005] - master$log_EPa[master$year==2000], master$VA[master$year==2000]))/((1-no_pointest_eta)*(1 - no_pointest_epsilon))))
+  
+  Gn_2010_nls = 1/(exp((weighted.mean(master$log_agspend[master$year == 2010] - master$log_agspend[master$year == 2005], master$VA[master$year==2005]) - estimate_nls$par[1]*weighted.mean(master$log_naspend[master$year == 2010] - master$log_naspend[master$year == 2005], master$VA[master$year==2005]) -
+                          (1-no_pointest_eta)*log(drel_priceag_2010) -
+                          (1-no_pointest_eta)*(no_pointest_epsilon - 1)*weighted.mean(master$log_EPa[master$year==2010] - master$log_EPa[master$year==2005], master$VA[master$year==2005]))/((1-no_pointest_eta)*(1 - no_pointest_epsilon))))
+}
+
+
+
+#For use with extrapolation counterfactual. Interestingly-- our specification is bad at matching growth over 20 year period (grossly overstates amount of growth--maybe because income effect too small)
+extrapolation_pricefall <- exp((weighted.mean(master$log_agspend[master$year == 2000 & master$sector == "ag"] - master_unstacked$log_agspend_ag_1985,  master$VA[master$year==2000 & master$sector=="ag"]) -  estimate_nls$par[1]*weighted.mean(master$log_naspend[master$year == 2000 & master$sector == "ag"] - master_unstacked$log_naspend_ag_1985, master$VA[master$year==2000 & master$sector == "ag"]) +
+                            weighted.mean(master$log_agspend[master$year == 2000 & master$sector == "na"] - master_unstacked$log_agspend_na_1985,  master$VA[master$year==2000 & master$sector == "na"]) -  estimate_nls$par[1]*weighted.mean(master$log_naspend[master$year == 2000 & master$sector == "na"] - master_unstacked$log_naspend_na_1985,  master$VA[master$year==2000 & master$sector == "na"]))/(2*(1-estimate_nls$par[2])*(estimate_nls$par[1]-1)))
+
+extrapolation_pricefall_nopointest <- exp((weighted.mean(master$log_agspend[master$year == 2000 & master$sector == "ag"] - master_unstacked$log_agspend_ag_1985,  master$VA[master$year==2000 & master$sector=="ag"]) -  no_pointest_epsilon*weighted.mean(master$log_naspend[master$year == 2000 & master$sector == "ag"] - master_unstacked$log_naspend_ag_1985, master$VA[master$year==2000 & master$sector == "ag"]) +
+                                  weighted.mean(master$log_agspend[master$year == 2000 & master$sector == "na"] - master_unstacked$log_agspend_na_1985,  master$VA[master$year==2000 & master$sector == "na"]) -  no_pointest_epsilon*weighted.mean(master$log_naspend[master$year == 2000 & master$sector == "na"] - master_unstacked$log_naspend_na_1985,  master$VA[master$year==2000 & master$sector == "na"]))/(2*(1-no_pointest_eta)*no_pointest_epsilon-1))
+#Other numbers do a much better job, interestingly enough. 
 
 
 #How much was the geometric average fall in prices in each sector for NLS estimates in 2005? 
-avg_logfall_na_nls <- exp(mean(log(master$dpindex_na[master$year==2005])))/Gn_2005_nls 
-avg_logfall_ag_nls <- exp(mean(log(master$dpindex_ag[master$year==2005])))/(Gn_2005_nls*relGa_2005)
-avg_logfall_na_unc <- exp(mean(log(master$dpindex_na[master$year==2005])))/Gn_2005_unc
-avg_logfall_ag_unc <- exp(mean(log(master$dpindex_ag[master$year==2005])))/(Gn_2005_unc*relGa_2005)
+avg_logfall_na_nls <- exp(weighted.mean(log(master$dpindex_na[master$year==2005]), master$VA[master$year==2000]))/Gn_2005_nls 
+avg_logfall_ag_nls <- exp(weighted.mean(log(master$dpindex_ag[master$year==2005]), master$VA[master$year==2000]))/(Gn_2005_nls*relGa_2005)
+avg_logfall_na_unc <- exp(weighted.mean(log(master$dpindex_na[master$year==2005]), master$VA[master$year==2000]))/Gn_2005_unc
+avg_logfall_ag_unc <- exp(weighted.mean(log(master$dpindex_ag[master$year==2005]), master$VA[master$year==2000]))/(Gn_2005_unc*relGa_2005)
 #Relative fall is designed to agree with the Groningen data, and it does.
 
 #Creating and exporting dataframe with estimate 
-export <- data.frame(c(estimate_nls$par[1]), c(estimate_nls$par[2]), c(Gn_2005_nls), c(Gn_2010_nls), c(relGa_2005), c(relGa_2010), c(estimate_unc$par[1]), c(estimate_unc$par[2]), c(Gn_2005_unc), c(Gn_2010_unc))
-colnames(export) <- c("Epsilon_nls", "Eta_nls", "Gn_2005_nls", "Gn_2010_nls", "Ga/Gn_2005", "Ga/Gn_2010", "Epsilon_unc", "Eta_unc", "Gn_2005_unc", "Gn_2010_unc")
+export <- data.frame(c(estimate_nls$par[1]), c(estimate_nls$par[2]), c(Gn_2005_nls), c(Gn_2010_nls), c(relGa_2005), c(relGa_2010), c(estimate_unc$par[1]), c(estimate_unc$par[2]), c(Gn_2005_unc), c(Gn_2010_unc), c(extrapolation_pricefall))
+colnames(export) <- c("Epsilon_nls", "Eta_nls", "Gn_2005_nls", "Gn_2010_nls", "Ga/Gn_2005", "Ga/Gn_2010", "Epsilon_unc", "Eta_unc", "Gn_2005_unc", "Gn_2010_unc", "extrapolation_pricefall_nopointest")
 write_xlsx(export, path = "constructed_outputV2/pref_estimates.xlsx")
 
 

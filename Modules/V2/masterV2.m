@@ -1,7 +1,7 @@
 
 %This module controls global parameters for use with other programs.
 %Date created: October 8th 2021
-%Date edited: October 14th 2021
+%Date edited: November 13th 2021
 
 global parameters 
 
@@ -46,7 +46,7 @@ parameters.alpha_a = 0.04 ;
 parameters.alpha_n = 0.04 ;
 
 %Estimates--Is land perfectly mobile or set to data levels?
-parameters.land_mobile = 1 ; %0 or 1
+parameters.land_mobile = 1 ; %0 or 1. if 0, takes a really long time to run (to compute all equilibria)
 
 
 

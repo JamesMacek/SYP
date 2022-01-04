@@ -1,5 +1,5 @@
 %Date created: October 14th 2021
-%Date edited: October 14th 2021
+%Date edited: December th 2021
 
 %This file calibrates productivity given cost data, and data on land prices
 %and value added per worker (and employment density). Normalizes so that geometric average
@@ -33,10 +33,16 @@ landprice_mobile = readtable('landprice_mobile.xlsx') ;
 dCommercial_land_na = NaN(N/2, 1) ;
 dCommercial_land_ag = NaN(N/2, 1) ;
 
-%If mobile features perfectly mobile land...
+%If condition features perfectly mobile land...
 if parameters.land_mobile == 1
     dCommercial_land_na([1:N/2-1], 1) = landprice_mobile.na_commercial_land([N/2:N-2], 1)./landprice_mobile.na_commercial_land([1:N/2-1], 1) ;
     dCommercial_land_ag([1:N/2-1], 1) = landprice_mobile.ag_commercial_land([N/2:N-2], 1)./landprice_mobile.ag_commercial_land([1:N/2-1], 1) ;
+end
+
+%If assume no mobile land
+if parameters.land_mobile == 0
+   dCommercial_land_na([1:N/2-1], 1) = ones(N/2-1, 1) ;
+   dCommercial_land_ag([1:N/2-1], 1) = ones(N/2-1, 1) ; 
 end
 
 %If change in land set to fit data...
@@ -86,6 +92,7 @@ prod_growth_na(31, 1) = ((master.nomY_na_2005(N/2, 1)./master.nomY_na_2000(N/2, 
 %NOTE: TFP not in every sense comparable with international because of no labour/land mobility and
 %unchanging inelastic supply.
 
+%Saving figures 
 histfit(prod_growth_ag, 6, 'kernel')
 histfit(prod_growth_na, 6, 'kernel')
 

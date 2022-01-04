@@ -32,7 +32,7 @@ co_obj.dLab_2005 = co_obj.emp_lab_2005./co_obj.emp_lab_2000 ;
 co_obj.dTFP_2005 = [master.dTFP_ag_2005 , master.dTFP_na_2005] ;
 
 %Initial GDP 
-co_obj.nomY_balanced_2000 = [master.nomY_ag_2000, master.nomY_na_2005] ;
+co_obj.nomY_balanced_2000 = [master.nomY_ag_2000, master.nomY_na_2000] ;
 
 %Observed GDP as initial condition for solving equilibrium
 co_obj.nomY_2005 = [master.nomY_ag_2005, master.nomY_na_2005] ;
@@ -46,9 +46,9 @@ co_obj.Agspend_2005 = [master.agspend_ag_2005, master.agspend_na_2005] ;
 if parameters.land_mobile == 1
     co_obj.commercial_land_2000 = [land_mobile.ag_commercial_land([1:N/2-1]), land_mobile.na_commercial_land([1:N/2-1])] ;
     co_obj.residential_land_2000 = [land_mobile.ag_residential_land([1:N/2-1]), land_mobile.na_residential_land([1:N/2-1])] ;
-    co_obj.landmass = land_mobile.landmass(1:N/2-1) ; %ONLY FOR domestic provinces. 
 end
 
+co_obj.landmass = land_mobile.landmass(1:N/2-1) ; %ONLY FOR domestic provinces.
 %If land immobile = observed levels, 
 
 
@@ -57,7 +57,6 @@ end
 cd C:\Users\James\Dropbox\SchoolFolder\SYP\modules\V2 %Going back to code folder
 
 %If land assumed completely mobile: 
-if parameters.land_mobile==1
 %________________________________________________________________________________________________________________________________
 %Intitial values = 2005 equilibrium
 Lab = co_obj.emp_lab_2005 ;
@@ -80,12 +79,22 @@ while Gnorm > 0.0000000001
 %dLab and perfect land mobility. International land immobile. Change in
 %land comes from assume land allocation that equates real rate of return on
 %land in 2000
+
+if parameters.land_mobile==1
 dVA_rat = (G(:, 1)./G(:, 2))./(co_obj.nomY_balanced_2000(:, 1)./co_obj.nomY_balanced_2000(:, 2)) ; %Ratio of change in ag/nonag VA in equilibrium
 dCommercial_land([1:N/2-1], 2) = co_obj.landmass([1:N/2-1])./(dVA_rat([1:N/2-1], 1).*co_obj.commercial_land_2000(:, 1) + dVA_rat([1:N/2-1], 1).*co_obj.residential_land_2000(:, 1) + co_obj.commercial_land_2000(:, 2) + co_obj.residential_land_2000(:, 2)) ; %Change in commercial land
 dResidential_land([1:N/2-1], 2) = dCommercial_land([1:N/2-1], 2) ; %change in residential land = change in commercial land if all workers paid same value added
 dCommercial_land([1:N/2-1], 1) = (dVA_rat([1:30], 1).*co_obj.landmass([1:N/2-1]))./(dVA_rat([1:N/2-1], 1).*co_obj.commercial_land_2000(:, 1) + dVA_rat([1:N/2-1], 1).*co_obj.residential_land_2000(:, 1) + co_obj.commercial_land_2000(:, 2) + co_obj.residential_land_2000(:, 2)) ;
 dResidential_land([1:N/2-1], 1) = dCommercial_land([1:N/2-1], 1) ; 
-dRental_rate = (G./co_obj.nomY_balanced_2000)./dCommercial_land ; %equilibrium change in rental rates
+dRental_rate = (G./co_obj.nomY_balanced_2000)./dCommercial_land ; %equilibrium change in rental rates (equalized across locations)
+end
+
+if parameters.land_mobile==0
+    %Equilibrium changes in rental rates (note: change in rental rate for
+    %agricultural productive land = change in rental rates for land in
+    %consumption for ag workers 
+  dRental_rate = (G./co_obj.nomY_balanced_2000)./dCommercial_land ;
+end
 
 %Test: implied change in rental rates equalize except internationally
 test1 = dRental_rate(:, 1) - dRental_rate(:, 2) ; %Equal 
@@ -148,7 +157,7 @@ Gpw(:, 2) = Gpw_new(1, [N/2+1:N])' ;
 dGpw = Gpw./(co_obj.nomY_balanced_2000./co_obj.emp_lab_2000) ;
 G = Gpw.*Lab ;
 end
-end
+
 
 %Calculating preference parameter that rationalizes this change in
 %equilibrium
@@ -214,10 +223,8 @@ save migrationflows_struct migf
 
 cd C:\Users\James\Dropbox\SchoolFolder\SYP\modules\V2
 
-%If land assumed completely mobile: 
-if parameters.land_mobile==1
 %________________________________________________________________________________________________________________________________
-%Intitial values = 2005 equilibrium
+%Intitial values = 2000 equilibrium
 Lab = co_obj.emp_lab_2000 ;
 dLab = co_obj.emp_lab_2000./co_obj.emp_lab_2000 ;
 dGpw = (co_obj.nomY_balanced_2000./co_obj.emp_lab_2000)./(co_obj.nomY_balanced_2000./co_obj.emp_lab_2000) ; %Equilibrium change in gross output per worker = eq change in VA/worker = eq change in labour wages initial value
@@ -238,14 +245,23 @@ while Gnorm > 0.0000000001
 %dLab and perfect land mobility. International land immobile. Change in
 %land comes from assume land allocation that equates real rate of return on
 %land in 2000
-dVA_rat = (G(:, 1)./G(:, 2))./(co_obj.nomY_balanced_2000(:, 1)./co_obj.nomY_balanced_2000(:, 2)) ; %Ratio of change in ag/nonag VA in equilibrium
-dCommercial_land([1:N/2-1], 2) = co_obj.landmass([1:N/2-1])./(dVA_rat([1:N/2-1], 1).*co_obj.commercial_land_2000(:, 1) + dVA_rat([1:N/2-1], 1).*co_obj.residential_land_2000(:, 1) + co_obj.commercial_land_2000(:, 2) + co_obj.residential_land_2000(:, 2)) ; %Change in commercial land
-dResidential_land([1:N/2-1], 2) = dCommercial_land([1:N/2-1], 2) ; %change in residential land = change in commercial land if all workers paid same value added
-dCommercial_land([1:N/2-1], 1) = (dVA_rat([1:30], 1).*co_obj.landmass([1:N/2-1]))./(dVA_rat([1:N/2-1], 1).*co_obj.commercial_land_2000(:, 1) + dVA_rat([1:N/2-1], 1).*co_obj.residential_land_2000(:, 1) + co_obj.commercial_land_2000(:, 2) + co_obj.residential_land_2000(:, 2)) ;
-dResidential_land([1:N/2-1], 1) = dCommercial_land([1:N/2-1], 1) ; 
-dRental_rate = (G./co_obj.nomY_balanced_2000)./dCommercial_land ; %equilibrium change in rental rates
+if parameters.land_mobile==1
+   dVA_rat = (G(:, 1)./G(:, 2))./(co_obj.nomY_balanced_2000(:, 1)./co_obj.nomY_balanced_2000(:, 2)) ; %Ratio of change in ag/nonag VA in equilibrium
+   dCommercial_land([1:N/2-1], 2) = co_obj.landmass([1:N/2-1])./(dVA_rat([1:N/2-1], 1).*co_obj.commercial_land_2000(:, 1) + dVA_rat([1:N/2-1], 1).*co_obj.residential_land_2000(:, 1) + co_obj.commercial_land_2000(:, 2) + co_obj.residential_land_2000(:, 2)) ; %Change in commercial land
+   dResidential_land([1:N/2-1], 2) = dCommercial_land([1:N/2-1], 2) ; %change in residential land = change in commercial land if all workers paid same value added
+   dCommercial_land([1:N/2-1], 1) = (dVA_rat([1:30], 1).*co_obj.landmass([1:N/2-1]))./(dVA_rat([1:N/2-1], 1).*co_obj.commercial_land_2000(:, 1) + dVA_rat([1:N/2-1], 1).*co_obj.residential_land_2000(:, 1) + co_obj.commercial_land_2000(:, 2) + co_obj.residential_land_2000(:, 2)) ;
+   dResidential_land([1:N/2-1], 1) = dCommercial_land([1:N/2-1], 1) ; 
+   dRental_rate = (G./co_obj.nomY_balanced_2000)./dCommercial_land ; %equilibrium change in rental rates
+end
+if parameters.land_mobile==0
+    %Equilibrium changes in rental rates (note: change in rental rate for
+    %agricultural productive land = change in rental rates for land in
+    %consumption for ag workers 
+   dRental_rate = (G./co_obj.nomY_balanced_2000)./dCommercial_land ;
+end
 
-%Test: implied change in rental rates equalize except internationally
+%Test: implied change in rental rates equalize except internationally (if
+%land_mobile==1)
 test1 = dRental_rate(:, 1) - dRental_rate(:, 2) ; %Equal 
 
 %2: calculating changes in unit costs, price indices
@@ -305,7 +321,6 @@ Gpw(:, 1) = Gpw_new(1, [1:N/2])' ;
 Gpw(:, 2) = Gpw_new(1, [N/2+1:N])' ;
 dGpw = Gpw./(co_obj.nomY_balanced_2000./co_obj.emp_lab_2000) ;
 G = Gpw.*Lab ;
-end
 end
 
 %Calculating preference parameter that rationalizes this change in

@@ -1,8 +1,10 @@
-%Date created: October 16th 2021
-%Date edited: October 30th 2021
+%Date created: November 13th 2021
+%Date edited: November 13th 2021
 
 
-%This file computes statistics for the main counterfactual in the paper.
+%This file computes an alternative counterfactual in which aggregate GDP
+%growth falls to match it observed levels of agricultural spending in 1985, holding total population, trade flows, migration costs/hukou registrants fixed at 2005 levels.  
+%The reason why is due to data constraints. 
 
 
 global N parameters co_obj tradec tradef migc migf
@@ -18,106 +20,42 @@ load constructed_outputV2/tradeflows_struct ;
 load constructed_outputV2/parameters
 load constructed_outputV2/migrationcosts_struct ;
 load constructed_outputV2/migrationflows_struct ;
-load constructed_outputV2/counterfactual_objects
+load constructed_outputV2/counterfactual_objects ;
+pref_estimates = readtable('constructed_outputV2/pref_estimates.xlsx') ;
 
-%% Part 1: Setting up additional parameters in co_obj
+%%
+%One: calculating fall in productivity associated with 1985 equilibrium
+avg_prodfall_n = pref_estimates.extrapolation_pricefall_nopointest.^(-parameters.vashare_n) ;
+avg_prodfall_a = pref_estimates.extrapolation_pricefall_nopointest.^(-parameters.vashare_a) ;
 
-resh_emp_lab_2000 = reshape([master.L_ag_2000([1:N/2-1], 1)' ; master.L_na_2000([1:N/2-1], 1)'], [N-2, 1]) ; %Reshaped employment structure
-resh_emp_lab_2005 = reshape([master.L_ag_2005([1:N/2-1], 1)' ; master.L_na_2005([1:N/2-1], 1)'], [N-2, 1]) ;
+dTFP = [repelem(avg_prodfall_a, N/2, 1), repelem(avg_prodfall_n, N/2, 1)] ;
+%%
 
-%Registered workers (Inverting migration matrix) 
-co_obj.registered_lab_2000 = (migf.f2000')\resh_emp_lab_2000 ;
-co_obj.registered_lab_2005 = (migf.f2005')\resh_emp_lab_2005 ;
-co_obj.registered_lab_2000 = reshape(co_obj.registered_lab_2000, [2, (N-2)/2])' ;
-co_obj.registered_lab_2005 = reshape(co_obj.registered_lab_2005, [2, (N-2)/2])' ;
-
-%Relative and uniform productivity growth
-co_obj.RdTFP_2005 = [co_obj.dTFP_2005(:, 1)/geomean(co_obj.dTFP_2005(:, 1)) , co_obj.dTFP_2005(:, 2)/geomean(co_obj.dTFP_2005(:, 2))] ; %Preserves distribution of productivity but geometric avg=1
-co_obj.AdTFP_2005 = [repelem(geomean(co_obj.dTFP_2005(:, 1)), N/2, 1) , repelem(geomean(co_obj.dTFP_2005(:, 2)), N/2, 1)] ;
-
-
-%% Part 2: Calculate implied equilibrium from entire model.
 cd C:\Users\James\Dropbox\SchoolFolder\SYP\modules\V2
 
-%If land assumed entirely mobile 
-
-     %2 for on, 1 for off
-    for rprod = 1:2
-    for trc = 1:2
-    for mic = 1:2
-    for dRegisteredWorkers = 1:2
-    for dPreferenceParameter = 1:2
-    for aprod = 1:2   
-        
-        
-    %____SETTING UP VALUES FOR EACH COUNTERFACTUAL EQUILIBRIUM
-     dTFP = ones(N/2, 2) ; %Change in TFP placeholder
-     dM = migc.c2000 ; %change in migration cost if ==1
-     lab_registered = co_obj.registered_lab_2000 ;
-     dPrefParameter_mat = co_obj.CalibratedPrefP_2000 ;
-        
-    if aprod == 2 && rprod == 2
-       dTFP = co_obj.dTFP_2005 ;
-    end
-    
-    if aprod == 2 && rprod == 1
-       dTFP = co_obj.AdTFP_2005 ;
-    end
-    
-             
-    if aprod == 1 && rprod == 2
-        dTFP = co_obj.RdTFP_2005 ;
-    end
-    
-    if trc == 2
-       pindexa = @p_index_ag ;
-       pindexn = @p_index_na ;
-    else 
-       pindexa = @p_index_ag_notr ;
-       pindexn = @p_index_na_notr ;
-    end
-    
-    if dRegisteredWorkers == 2
-       lab_registered = co_obj.registered_lab_2005 ;
-    end
-    
-    if dPreferenceParameter == 2
-        dPrefParameter_mat = co_obj.CalibratedPrefP_2005 ;
-    end
-    
-    if mic == 2
-      dM = migc.c2005 ;
-    end
-%________________________________________________________________________________________________________________________________
-%Intitial values = 2005 equilibrium
-Lab = co_obj.emp_lab_2005 ;
-dLab = co_obj.emp_lab_2005./co_obj.emp_lab_2000 ;
-dGpw = (co_obj.nomY_2005./co_obj.emp_lab_2005)./(co_obj.nomY_balanced_2000./co_obj.emp_lab_2000) ; %Equilibrium change in gross output per worker = eq change in VA/worker = eq change in labour wages initial value
-Gpw = co_obj.nomY_2005./co_obj.emp_lab_2005 ; %Equilibrium gross output per worker in levels initial value
-G = co_obj.nomY_2005 ; % Observed Gross output in levels as initial value for Equilibrium
-Agshare = ones(N/2, 2)*0.2 ; %Initial value of agricultural shares. Does not matter as updated right away. 
-
-if dPreferenceParameter == 2 
-  Agshare(N/2, [1:2]) = co_obj.Agspend_2005(N/2, [1:2]) ;
-else 
-  Agshare(N/2, [1:2]) = co_obj.Agspend_2000(N/2, [1:2]) ; %setting international spending shares to change along with dPreferenceParameter.       
-end
-  %International spending shares remain unchanged (we don't allow for endogenous adjustment)
-
-if dRegisteredWorkers == 1
+%COUNTERFACTUAL
+%Intitial values = 2000 equilibrium
 Lab = co_obj.emp_lab_2000 ;
 dLab = co_obj.emp_lab_2000./co_obj.emp_lab_2000 ;
 dGpw = (co_obj.nomY_balanced_2000./co_obj.emp_lab_2000)./(co_obj.nomY_balanced_2000./co_obj.emp_lab_2000) ; %Equilibrium change in gross output per worker = eq change in VA/worker = eq change in labour wages initial value
 Gpw = co_obj.nomY_balanced_2000./co_obj.emp_lab_2000 ; %Equilibrium gross output per worker in levels initial value
-G = co_obj.nomY_balanced_2000 ;
-end
+G = co_obj.nomY_balanced_2000 ; % Observed Gross output in levels as initial value for Equilibrium
+Agshare = co_obj.Agspend_2000 ; %Initial value of agricultural shares. (Calibrated to match)
+
 % + Other objects
 dCommercial_land = ones(N/2, 2) ; %initial values for change in residential + commercial land 
 dResidential_land = ones(N/2, 2) ; 
 options = optimset('Display','none') ; %options for fsolve
 
-%%START LOOP HERE
+%Other objects = 2000 equilibrium
+dPrefParameter_mat = co_obj.CalibratedPrefP_2000 ;
+dM = migc.c2000 ; 
+lab_registered = co_obj.registered_lab_2000 ;
+pindexa = @p_index_ag_notr ;
+pindexn = @p_index_na_notr ;
 
+%%START LOOP HERE
+Gnorm = 1 ;
 Lnorm = 1 ;
     while Lnorm > 0.0001
         Gnorm = 1 ;
@@ -166,7 +104,7 @@ dP_index = [pindexa(cost(:, 1), 2005) , pindexn(cost(:, 2), 2005)] ;
 for i = 1:30 %30 provinces. Make international ag consumption share unchanged.
     for k = 1:2 % sectors
      fun = @(x) log(x) - parameters.epsilon*log(1 - x) - (1-parameters.eta)*log(dP_index(i, 1)/dP_index(i, 2)) - (1-parameters.eta)*(parameters.epsilon - 1)*log(dGpw(i, k)/dP_index(i, 2)) - dPrefParameter_mat(i, k) ;
-     Agshare(i, k) = fzero(fun, [0.001, .999], options) ; 
+     Agshare(i, k) = fzero(fun, [0.000001, .9999999], options) ; 
    end
 end
 
@@ -234,61 +172,6 @@ dLab = Lab./co_obj.emp_lab_2000 ;
 
     end %END labour market clearing process
 
-%Calculating the coefficient of variation of population density)
 Density = (Lab([1:N/2-1], 1) + Lab([1:N/2-1], 2))./co_obj.landmass ;
-Coeff_density(aprod, rprod, trc, mic, dRegisteredWorkers, dPreferenceParameter) = sqrt(((N-2)/2 - 1)/((N-2)/2))*std(Density)/mean(Density) ; %Inputting coefficient into table. Recorrecting for Basel's correction here. 
-
-%effect on structural change (ag employment share)
-Ag_emp_store(aprod, rprod, trc, mic, dRegisteredWorkers, dPreferenceParameter) = sum(Lab(:, 1))/(sum(Lab(:, 1)) + sum(Lab(:, 2))) ;
-
-%effect on agricultural consumption shares
-Ag_share_store(aprod, rprod, trc, mic, dRegisteredWorkers, dPreferenceParameter, :, :) = Agshare ;
-
-%Repeating for employment weighted variation in population density
-wmeanDensity = sum(((Lab([1:N/2-1], 1) + Lab([1:N/2-1], 2))/sum(Lab([1:N/2-1], :), 'all')).*(Lab([1:N/2-1], 1) + Lab([1:N/2-1], 2))./co_obj.landmass, 'all');
-wstdDensity = sqrt(sum(((Lab([1:N/2-1], 1) + Lab([1:N/2-1], 2))/sum(Lab([1:N/2-1], :), 'all')).*((((Lab([1:N/2-1], 1) + Lab([1:N/2-1], 2))./co_obj.landmass) - wmeanDensity*ones(N/2-1, 1)).^2), 'all')) ;
-
-wCoeff_density(aprod, rprod, trc, mic, dRegisteredWorkers, dPreferenceParameter) = wstdDensity/wmeanDensity ;
-
-    end %ENDING ALL COUNTERFACTUAL EQUILIBRIA
-    end
-    end
-    end
-    end
-    end
-%%_________________________________________________________
-
-
-%%
-%Calculation of average marginal effects + saving
-effect_prod = zeros(1, 4) ;
-
-effect_prod(1) = mean(Coeff_density(2, :, :, :, :) - Coeff_density(1, :, :, :, :), 'all')/(Coeff_density(2, 2, 2, 2, 2) - Coeff_density(1, 1, 1, 1, 1)) ; 
-effect_prod(2) = mean(Coeff_density(:, 2, :, :, :) - Coeff_density(:, 1, :, :, :), 'all')/(Coeff_density(2, 2, 2, 2, 2) - Coeff_density(1, 1, 1, 1, 1)) ;
-effect_prod(3) = mean(Coeff_density(:, :, 2, :, :) - Coeff_density(:, :, 1, :, :), 'all')/(Coeff_density(2, 2, 2, 2, 2) - Coeff_density(1, 1, 1, 1, 1)) ; 
-effect_prod(4) = mean(Coeff_density(:, :, :, 2, :) - Coeff_density(:, :, :, 1, :), 'all')/(Coeff_density(2, 2, 2, 2, 2) - Coeff_density(1, 1, 1, 1, 1)) ;
-
-effect_prod = 100*effect_prod ; %percentage terms ;
-
-xbar = categorical({'Uniform growth', 'Relative growth', 'Trade costs', 'Migration costs'}) ;
-xbar = reordercats(xbar, {'Uniform growth', 'Relative growth', 'Trade costs', 'Migration costs'}) ;
-
-b = bar(xbar, effect_prod) ;
-ylabel('Contribution (Shapely Value), percent') ;
-
-
-cd C:\Users\James\Dropbox\SchoolFolder\SYP\Writeups\Drafts
-saveas(gcf, 'ShapelyDecomp.png') 
-
-%Plotting bar graph
-
-cd C:\Users\James\Dropbox\SchoolFolder\SYP\data\MyData\constructed_outputV2
-save density_dispersion Coeff_density
-save wdensity_dispersion wCoeff_density
-
-%Calculating aggregate fall in ag consumption shares (weighted by 2000
-%observed GDP-- equal across all so weights dont matter. Not much variation
-%in fall. 
-
-
-
+Coeff_density = sqrt(((N-2)/2 - 1)/((N-2)/2))*std(Density)/mean(Density) ; %Inputting coefficient into table. Recorrecting for Basel's correction here. 
+%Compared to the 1.1 implied by equilibrium.
